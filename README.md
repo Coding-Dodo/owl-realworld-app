@@ -1,25 +1,22 @@
-# OWL Javascript Project Starter
-
-This repo is an example on how to start a real project with the odoo owl framework.
+# ![RealWorld Example App](logo.png)
 
 [![Deploy on Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/Coding-Dodo/OWL-JavaScript-Project-Starter)
 
-## Features
+> ### OWL (Odoo Web Library) codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
 
-- [OWL](https://github.com/odoo/owl)
-- Javascript
-- Livereload
-- Rollup
+### [Demo](https://github.com/gothinkster/realworld)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
 
-## Installation
+This codebase was created to demonstrate a fully fledged fullstack application built with **[YOUR_FRAMEWORK]** including CRUD operations, authentication, routing, pagination, and more.
 
-[This repo is a "template repository". It means you can quickly create repositories based on this one, without it being a fork.](https://docs.github.com/en/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template#about-repository-templates)
+We've gone to great lengths to adhere to the **[YOUR_FRAMEWORK]** community styleguides & best practices.
 
-Otherwise, you may clone it:
+For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
-```bash
-git clone https://github.com/Coding-Dodo/OWL-JavaScript-Project-Starter.git
-```
+# How it works
+
+> Describe the general architecture of your app here
+
+# Getting started
 
 Install dependencies:
 
@@ -43,25 +40,4 @@ Run tests
 
 ```bash
 npm run test
-```
-
-## Components
-
-It is expected to create components in one file, following this convention:
-
-```js
-import { Component, useState, tags } from "@odoo/owl";
-
-export class App extends Component {
-  state = useState({ text: "Owl" });
-  update() {
-    this.state.text = this.state.text === "Owl" ? "World" : "Owl";
-  }
-}
-
-App.template = tags.xml/*xml*/ `
-    <div t-name="App" class="bg-white shadow m-8 p-2 rounded cursor-pointer" t-on-click="update">
-      Hello <t t-esc="state.text"/>
-    </div>
-`;
 ```
