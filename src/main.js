@@ -1,4 +1,4 @@
-import { App } from "./components/app";
+import { App } from "./components/App";
 import { utils } from "@odoo/owl";
 
 (async () => {
