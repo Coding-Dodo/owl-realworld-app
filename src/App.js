@@ -1,17 +1,18 @@
-import { Component, tags } from "@odoo/owl";
+import { Component, tags, router } from "@odoo/owl";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
-import { Home } from "./pages/Home";
+const RouteComponent = router.RouteComponent;
+const Link = router.Link;
 
 const APP_TEMPLATE = tags.xml/*xml*/ `
 <main>
   <Navbar/>
-  <Home/>
+  <RouteComponent/>
   <Footer/>
 </main>
 `;
 
 export class App extends Component {
-  static components = { Navbar, Footer, Home };
+  static components = { Footer, Navbar, RouteComponent, Link };
   static template = APP_TEMPLATE;
 }
