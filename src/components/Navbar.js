@@ -1,4 +1,5 @@
-import { Component, tags, router } from "@odoo/owl";
+import { Component, tags, router, hooks } from "@odoo/owl";
+const { useGetters } = hooks;
 const Link = router.Link;
 import { NavbarLink } from "./NavbarLink";
 
@@ -16,13 +17,13 @@ const NAVBAR_TEMPLATE = tags.xml/*xml*/ `
                 <NavbarLink to="'EDITOR'" class="nav-link nav-link-editor"><i class="ion-compose"></i> New Post</NavbarLink>
             </li>
             <li class="nav-item">
-                <NavbarLink to="'SETTINGS'" class="nav-link"><i class="ion-gear-a"></i> Settings</NavbarLink>
+                <NavbarLink to="'SETTINGS'" class="nav-link" t-if="userLoggedIn()"><i class="ion-gear-a"></i> Settings</NavbarLink>
             </li>
             <li class="nav-item">
-                <NavbarLink to="'LOG_IN'" class="nav-link">Sign in</NavbarLink>
+                <NavbarLink to="'LOG_IN'" class="nav-link" t-if="!userLoggedIn()">Sign in</NavbarLink>
             </li>
             <li class="nav-item">
-                <NavbarLink to="'REGISTER'" class="nav-link">Sign up</NavbarLink>
+                <NavbarLink to="'REGISTER'" class="nav-link" t-if="!userLoggedIn()">Sign up</NavbarLink>
             </li>
             <li class="nav-item">
                 <NavbarLink to="'PROFILE'" class="nav-link">Coding Dodo</NavbarLink>
@@ -34,4 +35,9 @@ const NAVBAR_TEMPLATE = tags.xml/*xml*/ `
 export class Navbar extends Component {
   static template = NAVBAR_TEMPLATE;
   static components = { Link, NavbarLink };
+  getters = useGetters();
+
+  userLoggedIn() {
+    return this.getters.userLoggedIn();
+  }
 }
