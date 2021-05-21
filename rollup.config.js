@@ -37,6 +37,7 @@ export default [
           contentBase: ["dist", "public"],
           host: "localhost",
           port: 8080,
+          publicPath: "/",
         }),
       !isProduction && livereload(),
       isProduction && terser.terser(),
