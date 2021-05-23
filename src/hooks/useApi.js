@@ -8,52 +8,32 @@ axios.defaults.headers.post["Accept"] = "application/json"; // default header fo
 class ApiService {
   constructor(token) {
     if (token) {
-      axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
+      axios.defaults.headers.common = { Authorization: `Token ${token}` };
     } else {
       axios.defaults.headers.common = {};
     }
   }
 
   async user() {
-    let user = {};
+    let response = {};
     await axios
       .get("/user")
       .then((res) => {
         console.log(res);
         if (res.data && res.data.user) {
-          user = res.data.user;
+          response = res.data.user;
         }
       })
       .catch((error) => {
-        console.log(error);
-      });
-    return user;
-  }
-
-  async updateUser(email, bio, image) {
-    let user = {};
-    await axios
-      .post("/user", {
-        user: {
-          email: email,
-          bio: bio,
-          image: image,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        if (res.data && res.data.user) {
-          user = res.data.user;
+        if (error && error.response) {
+          response = error.response.data;
         }
-      })
-      .catch((error) => {
-        console.log(error);
       });
-    return user;
+    return response;
   }
 
   async login(email, password) {
-    let user = {};
+    let response = {};
     await axios
       .post("/users/login", {
         user: {
@@ -64,16 +44,18 @@ class ApiService {
       .then((res) => {
         console.log(res);
         if (res.data && res.data.user) {
-          user = res.data.user;
+          response = res.data.user;
         }
       })
       .catch((error) => {
-        console.log(error);
+        if (error && error.response) {
+          response = error.response.data;
+        }
       });
-    return user;
+    return response;
   }
   async register(username, email, password) {
-    let user = {};
+    let response = {};
     await axios
       .post("/users", {
         user: {
@@ -85,13 +67,35 @@ class ApiService {
       .then((res) => {
         console.log(res);
         if (res.data && res.data.user) {
-          user = res.data.user;
+          response = res.data.user;
         }
       })
       .catch((error) => {
-        console.log(error);
+        if (error && error.response) {
+          console.log(error.response.data);
+          response = error.response.data;
+        }
       });
-    return user;
+    return response;
+  }
+  async updateUser(userData) {
+    let response = {};
+    await axios
+      .put("/user", {
+        user: userData,
+      })
+      .then((res) => {
+        console.log(res);
+        if (res.data && res.data.user) {
+          response = res.data.user;
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
   }
 }
 export function useApi() {

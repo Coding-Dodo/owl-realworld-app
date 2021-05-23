@@ -15,8 +15,10 @@ const LOG_IN_TEMPLATE = xml/* xml */ `
             <Link to="'REGISTER'">Need an account?</Link>
         </p>
 
-        <ul class="error-messages" t-if="state.logInError">
-          <li>Invalid credentials</li>
+        <ul class="error-messages">
+            <li t-foreach="state.errors" t-as="errorKey">
+                <t t-esc="errorKey"/> <t t-esc="state.errors[errorKey]"/> 
+            </li>
         </ul>
 
         <form>
@@ -44,7 +46,7 @@ export class LogIn extends Component {
   state = useState({
     email: "",
     password: "",
-    logInError: false,
+    errors: {},
     loading: false,
   });
 
@@ -52,18 +54,21 @@ export class LogIn extends Component {
     ev.preventDefault();
     if (this.state.loading) return;
 
-    this.state.logInError = false;
+    this.state.errors = {};
     this.state.loading = true;
-    let user = await this.conduitApi.login(
+    let response = await this.conduitApi.login(
       this.state.email,
       this.state.password
     );
-    if (user && user.token) {
+    if (response && response.token) {
       this.state.loading = false;
-      this.dispatch("login", user);
+      this.dispatch("login", response);
       this.env.router.navigate({ to: "HOME" });
     } else {
-      this.state.logInError = true;
+      if (response.errors) {
+        console.log(response.errors);
+        this.state.errors = response.errors;
+      }
     }
     this.state.loading = false;
   }

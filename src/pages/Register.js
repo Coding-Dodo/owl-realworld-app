@@ -15,8 +15,10 @@ const REGISTER_TEMPLATE = xml/* xml */ `
           <Link to="'LOG_IN'">Have an account?</Link>
         </p>
 
-        <ul class="error-messages" t-if="state.registerError">
-          <li>That email is already taken</li>
+        <ul class="error-messages">
+            <li t-foreach="state.errors" t-as="errorKey">
+                <t t-esc="errorKey"/> <t t-esc="state.errors[errorKey]"/> 
+            </li>
         </ul>
 
         <form>
@@ -48,7 +50,7 @@ export class Register extends Component {
     username: "",
     email: "",
     password: "",
-    registerError: false,
+    errors: {},
     loading: false,
   });
 
@@ -56,19 +58,22 @@ export class Register extends Component {
     ev.preventDefault();
     if (this.state.loading) return;
 
-    this.state.registerError = false;
+    this.state.errors = {};
     this.state.loading = true;
-    let user = await this.conduitApi.register(
+    let response = await this.conduitApi.register(
       this.state.username,
       this.state.email,
       this.state.password
     );
-    if (user && user.token) {
+    if (response && response.token) {
       this.state.loading = false;
-      this.dispatch("login", user);
+      this.dispatch("login", response);
       this.env.router.navigate({ to: "HOME" });
     } else {
-      this.state.registerError = true;
+      if (response.errors) {
+        console.log(response.errors);
+        this.state.errors = response.errors;
+      }
     }
     this.state.loading = false;
   }
