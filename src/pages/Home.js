@@ -1,4 +1,5 @@
-import { Component, tags, useState } from "@odoo/owl";
+import { Component, tags, hooks, useState } from "@odoo/owl";
+const { useGetters } = hooks;
 
 const HOME_TEMPLATE = tags.xml/*xml*/ `
 <div class="home-page">
@@ -16,7 +17,7 @@ const HOME_TEMPLATE = tags.xml/*xml*/ `
                 <div class="feed-toggle">
                     <ul class="nav nav-pills outline-active">
                         <li class="nav-item">
-                            <a class="nav-link disabled" href="">Your Feed</a>
+                            <a t-attf-class="nav-link {{ getters.userLoggedIn() ? '' : 'disabled' }}" href="">Your Feed</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" href="">Global Feed</a>
@@ -85,6 +86,7 @@ const HOME_TEMPLATE = tags.xml/*xml*/ `
 export class Home extends Component {
   static template = HOME_TEMPLATE;
   state = useState({ text: "A place to share your knowledge." });
+  getters = useGetters();
   updateBanner() {
     this.state.text =
       this.state.text === "A place to share your knowledge."

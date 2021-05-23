@@ -41,16 +41,12 @@ export class LogIn extends Component {
   static template = LOG_IN_TEMPLATE;
   dispatch = useDispatch();
   conduitApi = useApi();
-
-  constructor() {
-    super(...arguments);
-    this.state = useState({
-      email: "",
-      password: "",
-      logInError: false,
-      loading: false,
-    });
-  }
+  state = useState({
+    email: "",
+    password: "",
+    logInError: false,
+    loading: false,
+  });
 
   async login(ev) {
     ev.preventDefault();

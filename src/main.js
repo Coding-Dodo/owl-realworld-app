@@ -1,15 +1,36 @@
 import { App } from "./App";
 import { utils, router, mount, QWeb, Store } from "@odoo/owl";
 import { LogIn, Register, Home, Settings, Editor, Profile } from "./pages";
-import { useApi } from "./hooks/useApi";
+
+async function authRoute({ env, to }) {
+  if (!env.store.getters.userLoggedIn()) {
+    return { to: "LOG_IN" };
+  }
+  return true;
+}
 
 export const ROUTES = [
   { name: "HOME", path: "/", component: Home },
   { name: "LOG_IN", path: "/login", component: LogIn },
   { name: "REGISTER", path: "/register", component: Register },
-  { name: "SETTINGS", path: "/settings", component: Settings },
-  { name: "EDITOR", path: "/editor", component: Editor },
-  { name: "PROFILE", path: "/profile", component: Profile },
+  {
+    name: "SETTINGS",
+    path: "/settings",
+    component: Settings,
+    beforeRouteEnter: authRoute,
+  },
+  {
+    name: "EDITOR",
+    path: "/editor",
+    component: Editor,
+    beforeRouteEnter: authRoute,
+  },
+  {
+    name: "PROFILE",
+    path: "/profile",
+    component: Profile,
+    beforeRouteEnter: authRoute,
+  },
 ];
 const actions = {
   logout({ state }) {
@@ -29,10 +50,13 @@ const getters = {
     }
     return false;
   },
+  getUser({ state }) {
+    return state.user;
+  },
 };
 
-async function makeEnvironment() {
-  const env = { qweb: new QWeb() };
+async function makeEnvironment(store) {
+  const env = { qweb: new QWeb(), store: store };
   env.router = new router.Router(env, ROUTES, { mode: "hash" });
   await env.router.start();
   return env;
@@ -49,8 +73,8 @@ function makeStore() {
 }
 
 async function setup() {
-  App.env = await makeEnvironment();
-  App.env.store = makeStore();
+  let store = makeStore();
+  App.env = await makeEnvironment(store);
   mount(App, { target: document.body });
 }
 
