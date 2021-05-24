@@ -1,5 +1,12 @@
 import { App } from "./App";
-import { utils, router, mount, QWeb, Store } from "@odoo/owl";
+import {
+  utils,
+  router,
+  mount,
+  QWeb,
+  Store,
+  config as owlConfig,
+} from "@odoo/owl";
 import { LogIn, Register, Home, Settings, Editor, Profile } from "./pages";
 
 async function authRoute({ env, to }) {
@@ -73,6 +80,9 @@ function makeStore() {
 }
 
 async function setup() {
+  if (process.env.OWL_ENV === "dev") {
+    owlConfig.mode = "dev";
+  }
   let store = makeStore();
   App.env = await makeEnvironment(store);
   mount(App, { target: document.body });

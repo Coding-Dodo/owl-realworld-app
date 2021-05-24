@@ -97,6 +97,41 @@ class ApiService {
       });
     return response;
   }
+  async getArticles(queryOptions) {
+    let response = {};
+    await axios
+      .get("/articles", { params: queryOptions })
+      .then((res) => {
+        console.log(res);
+        if (res.data && res.data) {
+          response = res.data;
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
+  }
+  async getArticlesFeed(queryOptions) {
+    let response = {};
+    await axios
+      .get("/articles/feed", { params: queryOptions })
+      .then((res) => {
+        console.log(res);
+        if (res.data && res.data) {
+          response = res.data;
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
+  }
 }
 export function useApi() {
   const user = useStore((state) => state.user);
