@@ -7,6 +7,7 @@ import terser from "rollup-plugin-terser";
 import builtins from "rollup-plugin-node-builtins";
 import globals from "rollup-plugin-node-globals";
 import copy from "rollup-plugin-copy";
+import replace from "rollup-plugin-replace";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -20,6 +21,9 @@ export default [
       },
     ],
     plugins: [
+      replace({
+        "process.env.OWL_ENV": isProduction ? '"production"' : '"dev"',
+      }),
       nodeResolve({ preferBuiltins: true }),
       commonjs(),
       json({
