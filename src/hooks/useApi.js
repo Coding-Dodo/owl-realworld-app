@@ -132,6 +132,23 @@ class ApiService {
       });
     return response;
   }
+  async getTags() {
+    let response = {};
+    await axios
+      .get("/tags")
+      .then((res) => {
+        console.log(res);
+        if (res.data && res.data) {
+          response = res.data;
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
+  }
 }
 export function useApi() {
   const user = useStore((state) => state.user);
