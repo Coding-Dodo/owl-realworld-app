@@ -7,7 +7,6 @@ import marked from "marked";
 
 const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
 <div class="article-page">
-<t t-if="state.article">
   <div class="banner">
     <div class="container">
       <h1 t-esc="state.article.title"></h1>
@@ -42,7 +41,6 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
 
     <CommentsSection articleSlug="state.article.slug"/>
   </div>
-</t>
 </div>
 `;
 export class ArticlePage extends Component {
