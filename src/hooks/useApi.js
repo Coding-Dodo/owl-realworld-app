@@ -110,6 +110,30 @@ class ApiService {
       });
     return response;
   }
+  async createArticle(title, description, body, tagList) {
+    let response = {};
+    await axios
+      .post(`/articles`, {
+        article: {
+          title: title,
+          description: description,
+          body: body,
+          tagList: tagList,
+        },
+      })
+      .then((res) => {
+        if (res.data && res.data) {
+          response = res.data;
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
+  }
   async getArticles(queryOptions) {
     let response = {};
     await axios
