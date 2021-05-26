@@ -126,6 +126,25 @@ class ApiService {
       });
     return response;
   }
+  async updateArticle(slug, article) {
+    let response = {};
+    await axios
+      .put(`/articles/${slug}`, {
+        article: article,
+      })
+      .then((res) => {
+        if (res.data && res.data) {
+          response = res.data;
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
+  }
   async deleteArticle(slug) {
     let response = {};
     await axios
