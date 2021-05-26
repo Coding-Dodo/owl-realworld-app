@@ -1,5 +1,6 @@
 import { Component, tags, hooks, useState } from "@odoo/owl";
 import { ArticlesList } from "../components/ArticlesList";
+import { TagsCloud } from "../components/TagsCloud";
 const { useGetters } = hooks;
 
 const HOME_TEMPLATE = tags.xml/*xml*/ `
@@ -18,42 +19,38 @@ const HOME_TEMPLATE = tags.xml/*xml*/ `
                 <div class="feed-toggle">
                     <ul class="nav nav-pills outline-active">
                         <li class="nav-item">
-                            <a t-attf-class="nav-link {{ getters.userLoggedIn() ? '' : 'disabled' }} {{ state.navigationMode == 'FEED' ? 'active' : '' }}" t-on-click.prevent="changeNavigationMode('FEED')" href="/">Your Feed</a>
+                            <a  t-attf-class="nav-link {{ getters.userLoggedIn() ? '' : 'disabled' }} {{ state.navigationMode == 'FEED' ? 'active' : '' }}" 
+                                t-on-click.prevent="changeNavigationMode('FEED')"
+                                href="/">
+                                Your Feed
+                            </a>
                         </li>
-                        <li class="nav-item" t-on-click.prevent="changeNavigationMode('GLOBAL')">
-                            <a t-attf-class="nav-link {{ state.navigationMode == 'GLOBAL' ? 'active' : '' }}" href="/">Global Feed</a>
+                        <li class="nav-item">
+                            <a  t-attf-class="nav-link {{ state.navigationMode == 'GLOBAL' ? 'active' : '' }}" 
+                                t-on-click.prevent="changeNavigationMode('GLOBAL')"
+                                href="/">
+                                Global Feed
+                            </a>
+                        </li>
+                        <li class="nav-item" t-if="state.navigationMode == 'TAGS' and state.articlesOptions.tag">
+                            <a  t-attf-class="nav-link {{ state.navigationMode == 'TAGS' ? 'active' : '' }}" 
+                                href="#">
+                                <i class="ion-pound"></i> <t t-esc="state.articlesOptions.tag"/>
+                            </a>
                         </li>
                     </ul>
                 </div>
-
                 <ArticlesList queryOptions="state.articlesOptions"/>
             </div>
-
-            <div class="col-md-3">
-                <div class="sidebar">
-                    <p>Popular Tags</p>
-
-                    <div class="tag-list">
-                        <a href="" class="tag-pill tag-default">programming</a>
-                        <a href="" class="tag-pill tag-default">javascript</a>
-                        <a href="" class="tag-pill tag-default">emberjs</a>
-                        <a href="" class="tag-pill tag-default">angularjs</a>
-                        <a href="" class="tag-pill tag-default">react</a>
-                        <a href="" class="tag-pill tag-default">mean</a>
-                        <a href="" class="tag-pill tag-default">node</a>
-                        <a href="" class="tag-pill tag-default">rails</a>
-                    </div>
-                </div>
-            </div>
+            <TagsCloud t-on-tag-selected="onTagSelected"/>
         </div>
     </div>
-
 </div>
 
 `;
 export class Home extends Component {
   static template = HOME_TEMPLATE;
-  static components = { ArticlesList };
+  static components = { ArticlesList, TagsCloud };
   getters = useGetters();
 
   constructor(...args) {
@@ -90,6 +87,10 @@ export class Home extends Component {
       navigationMode: navigationMode,
       articlesOptions: articlesOptions,
     });
+  }
+
+  onTagSelected(ev) {
+    this.changeNavigationMode("TAGS", ev.detail.tag);
   }
 
   updateBanner() {

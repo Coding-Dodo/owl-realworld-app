@@ -23,38 +23,43 @@ const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
     />
 </section>
 `;
-function useLoader() {
-  const component = Component.current;
-  const conduitApi = useApi();
-  const state = useState({
+// Here only for demonstration of using hooks
+// function useLoader() {
+//   const component = Component.current;
+//   const conduitApi = useApi();
+//   const state = useState({
+//     articles: [],
+//     articlesCount: 0,
+//     loading: false,
+//   });
+//   async function fetchArticles(queryOptions) {
+//     let response = {};
+//     Object.assign(state, { loading: true });
+//     if (queryOptions.feed == true) {
+//       response = await conduitApi.getArticlesFeed(queryOptions);
+//     } else {
+//       response = await conduitApi.getArticles(queryOptions);
+//     }
+//     Object.assign(state, response);
+//     Object.assign(state, { loading: false });
+//   }
+//   onWillStart(async () => {
+//     fetchArticles(component.props.queryOptions);
+//   });
+//   onWillUpdateProps(async (nextProps) => {
+//     fetchArticles(nextProps.queryOptions);
+//   });
+//   return state;
+// }
+export class ArticlesList extends Component {
+  static template = ARTICLESLIST_TEMPLATE;
+  static components = { Article, Pagination };
+  conduitApi = useApi();
+  state = useState({
     articles: [],
     articlesCount: 0,
     loading: false,
   });
-  async function fetchArticles(queryOptions) {
-    let response = {};
-    if (queryOptions.feed == true) {
-      response = await conduitApi.getArticlesFeed(queryOptions);
-    } else {
-      response = await conduitApi.getArticles(queryOptions);
-    }
-    Object.assign(state, response);
-    Object.assign(state, { loading: false });
-  }
-  onWillStart(() => {
-    Object.assign(state, { loading: true });
-    fetchArticles(component.props.queryOptions);
-  });
-  onWillUpdateProps((nextProps) => {
-    Object.assign(state, { loading: true });
-    fetchArticles(nextProps.queryOptions);
-  });
-  return state;
-}
-export class ArticlesList extends Component {
-  static template = ARTICLESLIST_TEMPLATE;
-  static components = { Article, Pagination };
-  state = useLoader();
   static props = {
     queryOptions: {
       type: Object,
@@ -68,6 +73,26 @@ export class ArticlesList extends Component {
     },
   };
   conduitApi = useApi();
+
+  async fetchArticles(queryOptions) {
+    let response = {};
+    Object.assign(this.state, { loading: true });
+    if (queryOptions.feed == true) {
+      response = await this.conduitApi.getArticlesFeed(queryOptions);
+    } else {
+      response = await this.conduitApi.getArticles(queryOptions);
+    }
+    Object.assign(this.state, response);
+    Object.assign(this.state, { loading: false });
+  }
+
+  async willStart() {
+    this.fetchArticles(this.props.queryOptions);
+  }
+
+  async willUpdateProps(nextProps) {
+    this.fetchArticles(nextProps.queryOptions);
+  }
 
   updateOffset(ev) {
     Object.assign(this.props.queryOptions, ev.detail);

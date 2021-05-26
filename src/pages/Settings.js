@@ -95,7 +95,7 @@ export class Settings extends Component {
         this.env.router.navigate({ to: "LOG_IN" });
       } else {
         this.dispatch("login", response);
-        this.env.router.navigate({ to: "SETTINGS" });
+        this.env.router.navigate({ to: "HOME" });
       }
     } else {
       if (response.errors) {

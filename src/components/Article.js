@@ -14,11 +14,11 @@ const ARTICLE_TEMPLATE = tags.xml/*xml*/ `
             <i class="ion-heart"></i> <t t-esc="props.article.favoritesCount"/>
         </button>
     </div>
-    <a href="" class="preview-link">
+    <Link to="'ARTICLE'" params="{slug: props.article.slug}" class="preview-link">
         <h1><t t-esc="props.article.title"/></h1>
         <p><t t-esc="props.article.description"/></p>
         <span>Read more...</span>
-    </a>
+    </Link>
 </div>
 `;
 export class Article extends Component {

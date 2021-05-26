@@ -7,7 +7,15 @@ import {
   Store,
   config as owlConfig,
 } from "@odoo/owl";
-import { LogIn, Register, Home, Settings, Editor, Profile } from "./pages";
+import {
+  LogIn,
+  Register,
+  Home,
+  Settings,
+  Editor,
+  Profile,
+  ArticlePage,
+} from "./pages";
 
 async function authRoute({ env, to }) {
   if (!env.store.getters.userLoggedIn()) {
@@ -37,6 +45,11 @@ export const ROUTES = [
     path: "/profile",
     component: Profile,
     beforeRouteEnter: authRoute,
+  },
+  {
+    name: "ARTICLE",
+    path: "/article/{{slug}}",
+    component: ArticlePage,
   },
 ];
 const actions = {
