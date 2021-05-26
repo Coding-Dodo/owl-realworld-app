@@ -2,7 +2,7 @@ import { Component, tags } from "@odoo/owl";
 
 const PAGINATION_TEMPLATE = tags.xml/*xml*/ `
 <nav>
-    <ul class="pagination">
+    <ul class="pagination" t-if="showPagination()">
         <t t-foreach="getPagination()" t-as="pageNumber">
             <li t-attf-class="page-item {{ pageNumber == getCurrentPage() ? 'active' : ''}}">
                 <a class="page-link" href="" t-on-click.prevent="triggerPageChange(pageNumber)"><t t-esc="pageNumber"/></a>
@@ -18,6 +18,9 @@ export class Pagination extends Component {
     currentOffset: { type: Number },
     itemsPerPage: { type: Number },
   };
+  showPagination() {
+    return this.props.totalCount > this.props.itemsPerPage;
+  }
 
   getCurrentPage() {
     return this.props.currentOffset / this.props.itemsPerPage + 1;
@@ -33,7 +36,6 @@ export class Pagination extends Component {
     });
   }
   getPagination() {
-    console.log("test");
     let m = parseInt(this.props.totalCount / this.props.itemsPerPage);
     let c = this.getCurrentPage();
     var delta = 2,

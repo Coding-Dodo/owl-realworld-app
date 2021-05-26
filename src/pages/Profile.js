@@ -1,4 +1,8 @@
-import { Component, tags } from "@odoo/owl";
+import { Component, tags, useState, hooks, router } from "@odoo/owl";
+const { useGetters } = hooks;
+const { Link } = router;
+import { useApi } from "../hooks/useApi";
+import { ArticlesList } from "../components/ArticlesList";
 const { xml } = tags;
 
 const PROFILE_TEMPLATE = xml/* xml */ `
@@ -8,14 +12,24 @@ const PROFILE_TEMPLATE = xml/* xml */ `
             <div class="row">
 
             <div class="col-xs-12 col-md-10 offset-md-1">
-                <img src="http://i.imgur.com/Qr71crq.jpg" class="user-img" />
-                <h4>Eric Simons</h4>
-                <p>
-                Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from the Hunger Games
-                </p>
-                <button class="btn btn-sm btn-outline-secondary action-btn">
-                <i class="ion-plus-round"></i> Follow Eric Simons 
-                </button>
+                <img t-att-src="state.profile.image" class="user-img" />
+                <h4 t-esc="state.profile.username"></h4>
+                <p t-esc="state.profile.bio"></p>
+                <t t-if="state.profile.username == getters.getUser().username">
+                    <Link to="'SETTINGS'" class="btn btn-sm btn-outline-secondary action-btn">
+                        <i class="ion-gear-a"></i> Edit Profile Settings
+                    </Link>
+                </t>
+                <t t-else="">
+                    <button 
+                        class="btn btn-sm btn-outline-secondary action-btn" 
+                        t-attf-class="btn btn-sm action-btn {{ state.profile.following ? 'btn-secondary' : 'btn-outline-secondary' }}" 
+                        t-att-disabled="state.updatingFollowing"
+                        t-on-click.prevent="updateFollowing"
+                    >
+                        <i class="ion-plus-round"></i> <t t-esc="state.profile.following ? 'Unfollow' : 'Follow'"/> <t t-esc="state.profile.username"/>
+                    </button>
+                </t>
             </div>
 
             </div>
@@ -26,56 +40,25 @@ const PROFILE_TEMPLATE = xml/* xml */ `
     <div class="row">
 
         <div class="col-xs-12 col-md-10 offset-md-1">
-        <div class="articles-toggle">
-            <ul class="nav nav-pills outline-active">
-            <li class="nav-item">
-                <a class="nav-link active" href="">My Articles</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="">Favorited Articles</a>
-            </li>
-            </ul>
-        </div>
-
-        <div class="article-preview">
-            <div class="article-meta">
-            <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-            <div class="info">
-                <a href="" class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
+            <div class="articles-toggle">
+                <ul class="nav nav-pills outline-active">
+                <li class="nav-item">
+                    <a t-attf-class="nav-link {{ state.navigationMode == 'AUTHOR' ? 'active' : '' }}"
+                        href="" 
+                        t-on-click.prevent="changeNavigationMode('AUTHOR')">
+                    My Articles
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a  t-attf-class="nav-link {{ state.navigationMode == 'FAVORITED' ? 'active' : '' }}"
+                        href="" 
+                        t-on-click.prevent="changeNavigationMode('FAVORITED')">
+                        Favorited Articles
+                    </a>
+                </li>
+                </ul>
             </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
-            </button>
-            </div>
-            <a href="" class="preview-link">
-            <h1>How to build webapps that scale</h1>
-            <p>This is the description for the post.</p>
-            <span>Read more...</span>
-            </a>
-        </div>
-
-        <div class="article-preview">
-            <div class="article-meta">
-            <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-            <div class="info">
-                <a href="" class="author">Albert Pai</a>
-                <span class="date">January 20th</span>
-            </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-            </button>
-            </div>
-            <a href="" class="preview-link">
-            <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-            <p>This is the description for the post.</p>
-            <span>Read more...</span>
-            <ul class="tag-list">
-                <li class="tag-default tag-pill tag-outline">Music</li>
-                <li class="tag-default tag-pill tag-outline">Song</li>
-            </ul>
-            </a>
-        </div>
+            <ArticlesList queryOptions="state.articlesOptions"/>
         </div>
     </div>
     </div>
@@ -84,4 +67,84 @@ const PROFILE_TEMPLATE = xml/* xml */ `
 
 export class Profile extends Component {
   static template = PROFILE_TEMPLATE;
+  static components = { ArticlesList, Link };
+  conduitApi = useApi();
+  getters = useGetters();
+  state = useState({
+    profile: {},
+    navigationMode: "",
+    articlesOptions: {},
+    updatingFollowing: false,
+  });
+
+  async fetchProfile(username) {
+    let response = await this.conduitApi.getProfile(username);
+    if (response && response.profile) {
+      Object.assign(this.state, {
+        ...response,
+        navigationMode: "AUTHOR",
+        articlesOptions: {
+          author: response.profile.username,
+          limit: 10,
+          offset: 0,
+        },
+      });
+    }
+  }
+
+  async updateFollowing() {
+    if (!this.getters.userLoggedIn()) {
+      this.env.router.navigate({ to: "LOG_IN" });
+      return;
+    }
+    let newFollowingState = !this.state.profile.following;
+    Object.assign(this.state, { updatingFollowing: true });
+    if (newFollowingState === true) {
+      await this.conduitApi.followUser(this.state.profile.username);
+    } else {
+      await this.conduitApi.unfollowUser(this.state.profile.username);
+    }
+    Object.assign(this.state, { updatingFollowing: false });
+    Object.assign(this.state.profile, { following: newFollowingState });
+  }
+
+  async willUpdateProps() {
+    let username = this.env.router.currentParams.username;
+    await this.fetchProfile(username);
+  }
+
+  async willStart() {
+    let username = this.env.router.currentParams.username;
+    await this.fetchProfile(username);
+  }
+
+  changeNavigationMode(navigationMode) {
+    let articlesOptions = {};
+    switch (navigationMode) {
+      case "AUTHOR":
+        articlesOptions = {
+          author: this.state.profile.username,
+          limit: 10,
+          offset: 0,
+        };
+        break;
+      case "FAVORITED":
+        articlesOptions = {
+          favorited: this.state.profile.username,
+          limit: 10,
+          offset: 0,
+        };
+        break;
+      default:
+        articlesOptions = {
+          author: this.state.profile.username,
+          limit: 10,
+          offset: 0,
+        };
+    }
+    Object.assign(this.state, {
+      navigationMode: navigationMode,
+      articlesOptions: articlesOptions,
+    });
+  }
 }

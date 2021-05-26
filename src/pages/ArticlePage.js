@@ -14,6 +14,7 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
         article="state.article" 
         t-on-update-following="updateFollowing" 
         t-on-update-favorited="updateFavorited"
+        t-on-delete-article="deleteArticle"
         updatingFollowing="state.updatingFollowing"
         updatingFavorited="state.updatingFavorited"
         deletingArticle="state.deletingArticle"
@@ -33,6 +34,7 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
         article="state.article" 
         t-on-update-following="updateFollowing" 
         t-on-update-favorited="updateFavorited"
+        t-on-delete-article="deleteArticle"
         updatingFollowing="state.updatingFollowing"
         updatingFavorited="state.updatingFavorited"
         deletingArticle="state.deletingArticle"
@@ -70,6 +72,13 @@ export class ArticlePage extends Component {
     updatingFavorited: false,
     deletingArticle: false,
   });
+  async deleteArticle(ev) {
+    await this.conduitApi.deleteArticle(ev.detail.slug);
+    this.env.router.navigate({
+      to: "PROFILE",
+      params: { username: this.getters.getUser().username },
+    });
+  }
   async fetchArticle(slug) {
     let response = await this.conduitApi.getArticle(slug);
     if (response && response.article) {

@@ -14,6 +14,22 @@ class ApiService {
     }
   }
 
+  async getProfile(username) {
+    let response = {};
+    await axios
+      .get(`/profiles/${username}`)
+      .then((res) => {
+        if (res.data && res.data) {
+          response = res.data;
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
+  }
   async user() {
     let response = {};
     await axios
@@ -110,16 +126,28 @@ class ApiService {
       });
     return response;
   }
-  async createArticle(title, description, body, tagList) {
+  async deleteArticle(slug) {
+    let response = {};
+    await axios
+      .delete(`/articles/${slug}`)
+      .then((res) => {
+        if (res.data && res.data) {
+          response = res.data;
+          console.log(response);
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
+  }
+  async createArticle(article) {
     let response = {};
     await axios
       .post(`/articles`, {
-        article: {
-          title: title,
-          description: description,
-          body: body,
-          tagList: tagList,
-        },
+        article: article,
       })
       .then((res) => {
         if (res.data && res.data) {
