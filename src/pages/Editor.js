@@ -75,7 +75,10 @@ export class Editor extends Component {
     let response = {};
     Object.assign(this.state, { publishingArticle: true });
     if (this.state.article.slug) {
-      response = await this.conduitApi.updateArticle(this.state.article);
+      response = await this.conduitApi.updateArticle(
+        this.state.article.slug,
+        this.state.article
+      );
     } else {
       response = await this.conduitApi.createArticle(this.state.article);
     }
