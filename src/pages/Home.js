@@ -19,26 +19,32 @@ const HOME_TEMPLATE = tags.xml/*xml*/ `
                 <div class="feed-toggle">
                     <ul class="nav nav-pills outline-active">
                         <li class="nav-item">
-                            <a t-attf-class="nav-link {{ getters.userLoggedIn() ? '' : 'disabled' }} {{ state.navigationMode == 'FEED' ? 'active' : '' }}" t-on-click.prevent="changeNavigationMode('FEED')" href="/">Your Feed</a>
+                            <a  t-attf-class="nav-link {{ getters.userLoggedIn() ? '' : 'disabled' }} {{ state.navigationMode == 'FEED' ? 'active' : '' }}" 
+                                t-on-click.prevent="changeNavigationMode('FEED')"
+                                href="/">
+                                Your Feed
+                            </a>
                         </li>
-                        <li class="nav-item" t-on-click.prevent="changeNavigationMode('GLOBAL')">
-                            <a t-attf-class="nav-link {{ state.navigationMode == 'GLOBAL' ? 'active' : '' }}" href="/">Global Feed</a>
+                        <li class="nav-item">
+                            <a  t-attf-class="nav-link {{ state.navigationMode == 'GLOBAL' ? 'active' : '' }}" 
+                                t-on-click.prevent="changeNavigationMode('GLOBAL')"
+                                href="/">
+                                Global Feed
+                            </a>
                         </li>
                         <li class="nav-item" t-if="state.navigationMode == 'TAGS' and state.articlesOptions.tag">
-                            <a t-attf-class="nav-link {{ state.navigationMode == 'TAGS' ? 'active' : '' }}" href="#">
+                            <a  t-attf-class="nav-link {{ state.navigationMode == 'TAGS' ? 'active' : '' }}" 
+                                href="#">
                                 <i class="ion-pound"></i> <t t-esc="state.articlesOptions.tag"/>
                             </a>
                         </li>
                     </ul>
                 </div>
-
                 <ArticlesList queryOptions="state.articlesOptions"/>
             </div>
-
             <TagsCloud t-on-tag-selected="onTagSelected"/>
         </div>
     </div>
-
 </div>
 
 `;

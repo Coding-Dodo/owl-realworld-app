@@ -7,6 +7,7 @@ const TAGS_CLOUD_TEMPLATE = tags.xml/*xml*/ `
     <div class="sidebar">
         <p>Popular Tags</p>
         <div class="tag-list">
+            <span t-if="state.loading">Loading tags...</span>
             <t t-foreach="state.tags" t-as="tag">
                 <a href="#" class="tag-pill tag-default" t-on-click.prevent="tagSelected(tag)">
                     <t t-esc="tag"/>
@@ -16,27 +17,24 @@ const TAGS_CLOUD_TEMPLATE = tags.xml/*xml*/ `
     </div>
 </div>
 `;
-function useLoader() {
-  const conduitApi = useApi();
-  const state = useState({
+export class TagsCloud extends Component {
+  static template = TAGS_CLOUD_TEMPLATE;
+  state = useState({
     tags: [],
     loading: false,
   });
-  async function fetchTags() {
-    let response = await conduitApi.getTags();
-    Object.assign(state, response);
-    Object.assign(state, { loading: false });
-  }
-  onWillStart(() => {
-    Object.assign(state, { loading: true });
-    fetchTags();
-  });
-  return state;
-}
-export class TagsCloud extends Component {
-  static template = TAGS_CLOUD_TEMPLATE;
-  state = useLoader();
+  conduitApi = useApi();
 
+  async fetchTags() {
+    Object.assign(this.state, { loading: true });
+    let response = await this.conduitApi.getTags();
+    Object.assign(this.state, response);
+    Object.assign(this.state, { loading: false });
+  }
+
+  async willStart() {
+    this.fetchTags();
+  }
   tagSelected(tag) {
     this.trigger("tag-selected", {
       tag: tag,

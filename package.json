@@ -41,7 +41,8 @@
   },
   "dependencies": {
     "@odoo/owl": "^1.2.6",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "marked": "^2.0.5"
   },
   "jest": {
     "verbose": false,
