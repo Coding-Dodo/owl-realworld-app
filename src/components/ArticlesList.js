@@ -6,9 +6,6 @@ import { useApi } from "../hooks/useApi";
 
 const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
 <section>
-    <span class="loading-articles" t-if="state.loading">
-        Loading Articles...
-    </span>
     <t t-foreach="state.articles" t-as="article">
         <Article article="article"/>
     </t>
@@ -91,6 +88,13 @@ export class ArticlesList extends Component {
   }
 
   async willUpdateProps(nextProps) {
+    if (
+      nextProps.queryOptions == this.props.queryOptions &&
+      this.state.articles.length > 0
+    ) {
+      return;
+    }
+    Object.assign(this.state, { articles: [] });
     this.fetchArticles(nextProps.queryOptions);
   }
 

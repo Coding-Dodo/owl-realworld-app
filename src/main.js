@@ -41,10 +41,15 @@ export const ROUTES = [
     beforeRouteEnter: authRoute,
   },
   {
-    name: "PROFILE",
-    path: "/profile",
-    component: Profile,
+    name: "EDITOR_ARTICLE",
+    path: "/editor/{{slug}}",
+    component: Editor,
     beforeRouteEnter: authRoute,
+  },
+  {
+    name: "PROFILE",
+    path: "/profile/@{{username}}",
+    component: Profile,
   },
   {
     name: "ARTICLE",

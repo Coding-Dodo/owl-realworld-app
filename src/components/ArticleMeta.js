@@ -7,7 +7,7 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
 <div class="article-meta">
     <a href=""><img t-att-src="props.article.author.image" /></a>
     <div class="info">
-        <a href="#" class="author" t-esc="props.article.author.username"></a>
+        <Link to="'PROFILE'" params="{username: props.article.author.username}" class="author" t-esc="props.article.author.username"></Link>
         <span class="date" t-esc="getArticleDate(props.article.createdAt)"></span>
     </div>
     <!-- Articles List mode with only heart button -->
@@ -19,11 +19,11 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
     <!-- Article Page mode with following/favorite/edit/delete conditional buttons -->
     <t t-else="">
         <span t-if="userIsAuthor()">
-            <Link class="btn btn-outline-secondary btn-sm" to="'EDITOR'">
+            <Link class="btn btn-outline-secondary btn-sm" to="'EDITOR_ARTICLE'" params="{ slug: props.article.slug }">
                 <i class="ion-edit"></i> Edit Article
             </Link>
 
-            <button t-attf-class="btn btn-outline-danger btn-sm" t-on-click="deleteArticle">
+            <button t-attf-class="btn btn-outline-danger btn-sm" t-on-click.prevent="deleteArticle">
                 <i class="ion-trash-a"></i> Delete Article
             </button>
         </span>

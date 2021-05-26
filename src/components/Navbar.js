@@ -26,7 +26,7 @@ const NAVBAR_TEMPLATE = tags.xml/*xml*/ `
                 <NavbarLink to="'REGISTER'" class="nav-link">Sign up</NavbarLink>
             </li>
             <li class="nav-item" t-if="getters.userLoggedIn()">
-                <NavbarLink to="'PROFILE'" class="nav-link"><t t-esc="getters.getUser().username"/></NavbarLink>
+                <NavbarLink to="'PROFILE'" params="{ username: getters.getUser().username }" class="nav-link"><t t-esc="getters.getUser().username"/></NavbarLink>
             </li>
         </ul>
     </div>
