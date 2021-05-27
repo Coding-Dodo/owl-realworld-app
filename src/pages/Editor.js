@@ -1,6 +1,7 @@
 import { Component, tags, useState, hooks } from "@odoo/owl";
 const { useGetters } = hooks;
 import { useApi } from "../hooks/useApi";
+import { useArticleLoader } from "../hooks/useArticleLoader";
 const { xml } = tags;
 
 const EDITOR_TEMPLATE = xml/* xml */ `
@@ -17,13 +18,13 @@ const EDITOR_TEMPLATE = xml/* xml */ `
         <form>
           <fieldset>
             <fieldset class="form-group">
-                <input type="text" class="form-control form-control-lg" placeholder="Article Title" t-model="state.article.title" t-att-disabled="state.publishingArticle"/>
+                <input type="text" class="form-control form-control-lg" placeholder="Article Title" t-model="articleState.article.title" t-att-disabled="state.publishingArticle"/>
             </fieldset>
             <fieldset class="form-group">
-                <input type="text" class="form-control" placeholder="What's this article about?" t-model="state.article.description" t-att-disabled="state.publishingArticle"/>
+                <input type="text" class="form-control" placeholder="What's this article about?" t-model="articleState.article.description" t-att-disabled="state.publishingArticle"/>
             </fieldset>
             <fieldset class="form-group">
-                <textarea class="form-control" rows="8" placeholder="Write your article (in markdown)" t-model="state.article.body" t-att-disabled="state.publishingArticle"></textarea>
+                <textarea class="form-control" rows="8" placeholder="Write your article (in markdown)" t-model="articleState.article.body" t-att-disabled="state.publishingArticle"></textarea>
             </fieldset>
             <fieldset class="form-group">
                 <input type="text" class="form-control" placeholder="Enter tags" t-att-disabled="state.publishingArticle"/><div class="tag-list"></div>
@@ -43,44 +44,22 @@ export class Editor extends Component {
   static template = EDITOR_TEMPLATE;
   getters = useGetters();
   state = useState({
-    article: {
-      slug: "",
-      title: "",
-      description: "",
-      body: "",
-      tagList: [],
-    },
     publishingArticle: false,
     errors: {},
   });
+  articleState = useArticleLoader();
   conduitApi = useApi();
-  async fetchArticle(slug) {
-    let response = await this.conduitApi.getArticle(slug);
-    if (
-      response &&
-      response.article &&
-      response.article.author.username == this.getters.getUser().username
-    ) {
-      Object.assign(this.state, response);
-    }
-  }
-  async willStart() {
-    if (this.env.router.currentParams && this.env.router.currentParams.slug) {
-      let slug = this.env.router.currentParams.slug;
-      await this.fetchArticle(slug);
-    }
-  }
 
   async publishArticle() {
     let response = {};
     Object.assign(this.state, { publishingArticle: true });
-    if (this.state.article.slug) {
+    if (this.articleState.article.slug) {
       response = await this.conduitApi.updateArticle(
-        this.state.article.slug,
-        this.state.article
+        this.articleState.article.slug,
+        this.articleState.article
       );
     } else {
-      response = await this.conduitApi.createArticle(this.state.article);
+      response = await this.conduitApi.createArticle(this.articleState.article);
     }
     Object.assign(this.state, { publishingArticle: false });
     if (response.article) {
