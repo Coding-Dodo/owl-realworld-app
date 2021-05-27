@@ -1,6 +1,7 @@
 import { Component, tags, useState, hooks } from "@odoo/owl";
-const { onWillStart, useEnv, useGetters } = hooks;
+const { useGetters } = hooks;
 import { useApi } from "../hooks/useApi";
+import { useArticleLoader } from "../hooks/useArticleLoader";
 import { ArticleMeta } from "../components/ArticleMeta";
 import { CommentsSection } from "../components/CommentsSection";
 import marked from "marked";
@@ -9,9 +10,9 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
 <div class="article-page">
   <div class="banner">
     <div class="container">
-      <h1 t-esc="state.article.title"></h1>
+      <h1 t-esc="articleState.article.title"></h1>
       <ArticleMeta 
-        article="state.article" 
+        article="articleState.article" 
         t-on-update-following="updateFollowing" 
         t-on-update-favorited="updateFavorited"
         t-on-delete-article="deleteArticle"
@@ -24,14 +25,14 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
   <div class="container page">
     <div class="row article-content">
       <div class="col-md-12">
-        <div t-raw="renderMarkdown(state.article.body)"/>
+        <div t-raw="renderMarkdown(articleState.article.body)"/>
       </div>
     </div>
     <hr />
 
     <div class="article-actions">
       <ArticleMeta 
-        article="state.article" 
+        article="articleState.article" 
         t-on-update-following="updateFollowing" 
         t-on-update-favorited="updateFavorited"
         t-on-delete-article="deleteArticle"
@@ -41,7 +42,7 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
       />
     </div>
 
-    <CommentsSection articleSlug="state.article.slug"/>
+    <CommentsSection articleSlug="articleState.article.slug"/>
   </div>
 </div>
 `;
@@ -51,47 +52,22 @@ export class ArticlePage extends Component {
   getters = useGetters();
   conduitApi = useApi();
   state = useState({
-    article: {
-      slug: "",
-      title: "",
-      description: "",
-      body: "",
-      tagList: [],
-      createdAt: "",
-      updatedAt: "",
-      favorited: false,
-      favoritesCount: 0,
-      author: {
-        username: "",
-        bio: "",
-        image: "",
-        following: false,
-      },
-    },
     updatingFollowing: false,
     updatingFavorited: false,
     deletingArticle: false,
   });
+  articleState = useArticleLoader();
+
+  renderMarkdown(content) {
+    return marked(content);
+  }
+
   async deleteArticle(ev) {
     await this.conduitApi.deleteArticle(ev.detail.slug);
     this.env.router.navigate({
       to: "PROFILE",
       params: { username: this.getters.getUser().username },
     });
-  }
-  async fetchArticle(slug) {
-    let response = await this.conduitApi.getArticle(slug);
-    if (response && response.article) {
-      Object.assign(this.state, response);
-    }
-  }
-  async willStart() {
-    let slug = this.env.router.currentParams.slug;
-    await this.fetchArticle(slug);
-  }
-
-  renderMarkdown(content) {
-    return marked(content);
   }
 
   async updateFollowing(ev) {
@@ -101,12 +77,16 @@ export class ArticlePage extends Component {
     }
     Object.assign(this.state, { updatingFollowing: true });
     if (ev.detail.following === true) {
-      await this.conduitApi.followUser(this.state.article.author.username);
+      await this.conduitApi.followUser(
+        this.articleState.article.author.username
+      );
     } else {
-      await this.conduitApi.unfollowUser(this.state.article.author.username);
+      await this.conduitApi.unfollowUser(
+        this.articleState.article.author.username
+      );
     }
     Object.assign(this.state, { updatingFollowing: false });
-    Object.assign(this.state.article.author, ev.detail);
+    Object.assign(this.articleState.article.author, ev.detail);
   }
 
   async updateFavorited(ev) {
@@ -116,11 +96,11 @@ export class ArticlePage extends Component {
     }
     Object.assign(this.state, { updatingFavorited: true });
     if (ev.detail.favorited === true) {
-      await this.conduitApi.favoriteArticle(this.state.article.slug);
+      await this.conduitApi.favoriteArticle(this.articleState.article.slug);
     } else {
-      await this.conduitApi.unfavoriteArticle(this.state.article.slug);
+      await this.conduitApi.unfavoriteArticle(this.articleState.article.slug);
     }
     Object.assign(this.state, { updatingFavorited: false });
-    Object.assign(this.state.article, ev.detail);
+    Object.assign(this.articleState.article, ev.detail);
   }
 }

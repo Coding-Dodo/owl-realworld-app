@@ -1,13 +1,12 @@
-import { Component, tags, hooks, useState } from "@odoo/owl";
-const { onWillUpdateProps, onWillStart } = hooks;
-import { Article } from "./Article";
+import { Component, tags, useState } from "@odoo/owl";
+import { ArticlePreview } from "./ArticlePreview";
 import { Pagination } from "./Pagination";
 import { useApi } from "../hooks/useApi";
 
 const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
 <section>
     <t t-foreach="state.articles" t-as="article">
-        <Article article="article"/>
+        <ArticlePreview article="article"/>
     </t>
     <span class="loading-articles" t-if="state.loading">
         Loading Articles...
@@ -20,37 +19,9 @@ const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
     />
 </section>
 `;
-// Here only for demonstration of using hooks
-// function useLoader() {
-//   const component = Component.current;
-//   const conduitApi = useApi();
-//   const state = useState({
-//     articles: [],
-//     articlesCount: 0,
-//     loading: false,
-//   });
-//   async function fetchArticles(queryOptions) {
-//     let response = {};
-//     Object.assign(state, { loading: true });
-//     if (queryOptions.feed == true) {
-//       response = await conduitApi.getArticlesFeed(queryOptions);
-//     } else {
-//       response = await conduitApi.getArticles(queryOptions);
-//     }
-//     Object.assign(state, response);
-//     Object.assign(state, { loading: false });
-//   }
-//   onWillStart(async () => {
-//     fetchArticles(component.props.queryOptions);
-//   });
-//   onWillUpdateProps(async (nextProps) => {
-//     fetchArticles(nextProps.queryOptions);
-//   });
-//   return state;
-// }
 export class ArticlesList extends Component {
   static template = ARTICLESLIST_TEMPLATE;
-  static components = { Article, Pagination };
+  static components = { ArticlePreview, Pagination };
   conduitApi = useApi();
   state = useState({
     articles: [],
