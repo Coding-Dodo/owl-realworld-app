@@ -4,7 +4,7 @@ import { useApi } from "../hooks/useApi";
 const { useGetters } = hooks;
 const Link = router.Link;
 
-const ARTICLE_TEMPLATE = tags.xml/*xml*/ `
+const ARTICLE_PREVIEW_TEMPLATE = tags.xml/*xml*/ `
 <div class="article-preview">
     <ArticleMeta 
         article="props.article"  
@@ -19,8 +19,8 @@ const ARTICLE_TEMPLATE = tags.xml/*xml*/ `
     </Link>
 </div>
 `;
-export class Article extends Component {
-  static template = ARTICLE_TEMPLATE;
+export class ArticlePreview extends Component {
+  static template = ARTICLE_PREVIEW_TEMPLATE;
   static components = { Link, ArticleMeta };
   state = useState({
     updatingFavorited: false,
