@@ -1,5 +1,4 @@
 import { Component, tags, useState, hooks } from "@odoo/owl";
-const { onWillStart } = hooks;
 import { useApi } from "../hooks/useApi";
 
 const TAGS_CLOUD_TEMPLATE = tags.xml/*xml*/ `

@@ -1,7 +1,7 @@
 import { Component, tags, hooks, useState } from "@odoo/owl";
 const { useGetters } = hooks;
 import { useApi } from "../hooks/useApi";
-import { formatDate } from "../utils/formatDate";
+import { formatDate } from "../utilities/formatDate";
 
 const COMMENTS_SECTION_TEMPLATE = tags.xml/*xml*/ `
 <div class="row">
@@ -59,7 +59,7 @@ export class CommentsSection extends Component {
   static components = {};
   conduitApi = useApi();
   getters = useGetters();
-  formatDate = formatDate;
+  static formatDate = formatDate;
   state = useState({
     comments: [],
     loadingComments: false,

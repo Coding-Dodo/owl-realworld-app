@@ -1,6 +1,6 @@
 import { Component, tags, router } from "@odoo/owl";
 import { ArticleMeta } from "./ArticleMeta";
-import { formatDate } from "../utils/formatDate";
+import { formatDate } from "../utilities/formatDate";
 const Link = router.Link;
 
 const ARTICLE_PREVIEW_TEMPLATE = tags.xml/*xml*/ `
