@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "OWL Typescript Sandbox",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "build": "NODE_ENV=production rollup -c",
     "dev": "rollup -c -w --testets --environment OWL_ENV"
   },

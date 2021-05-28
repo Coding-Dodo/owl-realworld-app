@@ -6,11 +6,9 @@ import { NavbarLink } from "./NavbarLink";
 const NAVBAR_TEMPLATE = tags.xml/*xml*/ `
 <nav class="navbar navbar-light">
     <div class="container">
-        <!-- <a class="navbar-brand" href="index.html">conduit</a> -->
         <Link to="'HOME'" class="navbar-brand">conduit</Link>
         <ul class="nav navbar-nav pull-xs-right">
             <li class="nav-item">
-                <!-- Add "active" class when you're on that page" -->
                 <NavbarLink to="'HOME'" class="nav-link">Home</NavbarLink>
             </li>
             <li class="nav-item" t-if="getters.userLoggedIn()">

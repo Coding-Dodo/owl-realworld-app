@@ -85,7 +85,6 @@ class ApiService {
       })
       .catch((error) => {
         if (error && error.response) {
-          console.log(error.response.data);
           response = error.response.data;
         }
       });
@@ -116,7 +115,6 @@ class ApiService {
       .then((res) => {
         if (res.data && res.data) {
           response = res.data;
-          console.log(response);
         }
       })
       .catch((error) => {
@@ -135,7 +133,6 @@ class ApiService {
       .then((res) => {
         if (res.data && res.data) {
           response = res.data;
-          console.log(response);
         }
       })
       .catch((error) => {
@@ -152,7 +149,6 @@ class ApiService {
       .then((res) => {
         if (res.data && res.data) {
           response = res.data;
-          console.log(response);
         }
       })
       .catch((error) => {
@@ -171,7 +167,6 @@ class ApiService {
       .then((res) => {
         if (res.data && res.data) {
           response = res.data;
-          console.log(response);
         }
       })
       .catch((error) => {
@@ -188,7 +183,6 @@ class ApiService {
       .then((res) => {
         if (res.data && res.data) {
           response = res.data;
-          console.log(response);
         }
       })
       .catch((error) => {

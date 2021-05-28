@@ -6,10 +6,10 @@ const { useGetters } = hooks;
 const HOME_TEMPLATE = tags.xml/*xml*/ `
 <div class="home-page">
 
-    <div class="banner" t-on-click="updateBanner">
+    <div class="banner">
         <div class="container">
             <h1 class="logo-font">conduit</h1>
-            <p><t t-esc="state.text"/></p>
+            <p>A place to share your knowledge.</p>
         </div>
     </div>
 
@@ -40,7 +40,7 @@ const HOME_TEMPLATE = tags.xml/*xml*/ `
                         </li>
                     </ul>
                 </div>
-                <ArticlesList queryOptions="state.articlesOptions"/>
+                <ArticlesList queryOptions="state.articlesOptions" t-on-update-offset="updateOffset"/>
             </div>
             <TagsCloud t-on-tag-selected="onTagSelected"/>
         </div>
@@ -88,15 +88,11 @@ export class Home extends Component {
       articlesOptions: articlesOptions,
     });
   }
+  updateOffset(ev) {
+    this.state.articlesOptions.offset = ev.detail.offset;
+  }
 
   onTagSelected(ev) {
     this.changeNavigationMode("TAGS", ev.detail.tag);
-  }
-
-  updateBanner() {
-    this.state.text =
-      this.state.text === "A place to share your knowledge."
-        ? "An OWL (Odoo Web Library) RealWorld App"
-        : "A place to share your knowledge.";
   }
 }

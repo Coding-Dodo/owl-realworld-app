@@ -66,7 +66,6 @@ export class LogIn extends Component {
       this.env.router.navigate({ to: "HOME" });
     } else {
       if (response.errors) {
-        console.log(response.errors);
         this.state.errors = response.errors;
       }
     }

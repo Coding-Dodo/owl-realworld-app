@@ -35,6 +35,7 @@ export class TagsCloud extends Component {
   async willStart() {
     this.fetchTags();
   }
+
   tagSelected(tag) {
     this.trigger("tag-selected", {
       tag: tag,
