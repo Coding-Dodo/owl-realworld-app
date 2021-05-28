@@ -12,9 +12,10 @@ const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
         Loading Articles...
     </span>
     <Pagination 
+        t-if="! state.loading"
         itemsPerPage="props.queryOptions.limit" 
         totalCount="state.articlesCount"
-        currentOffset="props.queryOptions.offset"
+        currentOffset="state.currentOffset"
     />
 </section>
 `;
@@ -26,6 +27,7 @@ export class ArticlesList extends Component {
     articles: [],
     articlesCount: 0,
     loading: false,
+    currentOffset: 0,
   });
   static props = {
     queryOptions: {
@@ -54,15 +56,20 @@ export class ArticlesList extends Component {
   }
 
   async willStart() {
-    console.log("willStart");
     this.fetchArticles(this.props.queryOptions);
   }
 
   async willUpdateProps(nextProps) {
-    if (nextProps.queryOptions == this.props.queryOptions) {
+    if (
+      nextProps.queryOptions == this.props.queryOptions &&
+      this.state.currentOffset == nextProps.queryOptions.offset
+    ) {
       return;
     }
-    Object.assign(this.state, { articles: [] });
+    Object.assign(this.state, {
+      articles: [],
+      currentOffset: nextProps.queryOptions.offset,
+    });
     this.fetchArticles(nextProps.queryOptions);
   }
 }
