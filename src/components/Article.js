@@ -8,8 +8,8 @@ const ARTICLE_TEMPLATE = tags.xml/*xml*/ `
 <div class="article-preview">
     <ArticleMeta 
         article="props.article"  
-        t-on-update-favorited="updateFavorited"
-        updatingFavorited="state.updatingFavorited"
+        t-on-update-favorited="onUpdateFavorited"
+        t-on-update-following="onUpdateFollowing"
         articlesListMode="true"
       />
     <Link to="'ARTICLE'" params="{slug: props.article.slug}" class="preview-link">
@@ -30,20 +30,7 @@ export class Article extends Component {
   static props = {
     article: { type: Object },
   };
-  async updateFavorited(ev) {
-    if (!this.getters.userLoggedIn()) {
-      this.env.router.navigate({ to: "LOG_IN" });
-      return;
-    }
-    Object.assign(this.state, { updatingFavorited: true });
-    if (ev.detail.favorited === true) {
-      await this.conduitApi.favoriteArticle(this.props.article.slug);
-    } else {
-      await this.conduitApi.unfavoriteArticle(this.props.article.slug);
-    }
-    Object.assign(this.state, { updatingFavorited: false });
-    Object.assign(this.props.article, ev.detail);
-  }
+
   getArticleDate() {
     let articleDate = new Date(this.props.article.createdAt);
     return articleDate.toLocaleDateString("en-US", {
@@ -51,5 +38,8 @@ export class Article extends Component {
       month: "long",
       day: "numeric",
     });
+  }
+  onUpdateFavorited(ev) {
+    console.log(ev.detail);
   }
 }

@@ -134,6 +134,22 @@ class ApiService {
       });
     return response;
   }
+  async deleteArticle(slug) {
+    let response = {};
+    await axios
+      .delete(`/articles/${slug}`)
+      .then((res) => {
+        if (res.data && res.data) {
+          response = res.data;
+        }
+      })
+      .catch((error) => {
+        if (error && error.response) {
+          response = error.response.data;
+        }
+      });
+    return response;
+  }
   async getArticles(queryOptions) {
     let response = {};
     await axios

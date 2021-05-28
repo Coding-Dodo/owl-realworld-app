@@ -1,4 +1,4 @@
-import { Component, tags, hooks, router } from "@odoo/owl";
+import { Component, tags, hooks, router, useState } from "@odoo/owl";
 const { useGetters } = hooks;
 const { Link } = router;
 import { useApi } from "../hooks/useApi";
@@ -12,7 +12,7 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
     </div>
     <!-- Articles List mode with only heart button -->
     <t t-if="props.articlesListMode">
-        <button t-attf-class="btn btn-sm pull-xs-right {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" t-att-disabled="props.updatingFavorited" t-on-click="toggleFavoriteArticle">
+        <button t-attf-class="btn btn-sm pull-xs-right {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" t-att-disabled="state.updatingFavorited" t-on-click="updateFavorited(props.article.slug, !props.article.favorited)">
             <i class="ion-heart"></i> <t t-esc="props.article.favoritesCount"/>
         </button>
     </t>
@@ -23,22 +23,22 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
                 <i class="ion-edit"></i> Edit Article
             </Link>
 
-            <button t-attf-class="btn btn-outline-danger btn-sm" t-on-click="deleteArticle">
+            <button t-attf-class="btn btn-outline-danger btn-sm" t-on-click="deleteArticle(props.article.slug)">
                 <i class="ion-trash-a"></i> Delete Article
             </button>
         </span>
         <span t-else="">
             <button 
                 t-attf-class="btn btn-sm {{ props.article.author.following ? 'btn-secondary' : 'btn-outline-secondary' }}" 
-                t-on-click="toggleFollowAuthor" 
-                t-att-disabled="props.updatingFollowing"
+                t-on-click="updateFavorited(props.article.author.username, !props.article.author.following)"
+                t-att-disabled="state.updatingFollowing"
             >
                 <i class="ion-plus-round"></i> <t t-esc="props.article.author.following ? 'Unfollow' : 'Follow'"/> <t t-esc="props.article.author.username"/>
             </button> 
             <button 
                 t-attf-class="btn btn-sm {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" 
-                t-att-disabled="props.updatingFavorited" 
-                t-on-click="toggleFavoriteArticle"
+                t-att-disabled="state.updatingFavorited" 
+                t-on-click="updateFavorited(props.article.slug, !props.article.favorited)"
             >
                 <i class="ion-heart"></i> <t t-esc="props.article.favorited ? 'Unfavorite': 'Favorite'"/> Post
                 <span class="counter">(<t t-esc="props.article.favoritesCount"/>)</span>
@@ -52,11 +52,13 @@ export class ArticleMeta extends Component {
   static components = { Link };
   conduitApi = useApi();
   getters = useGetters();
+  state = useState({
+    updatingFollowing: false,
+    updatingFavorited: false,
+    deletingArticle: false,
+  });
   static props = {
     article: { type: Object },
-    updatingFollowing: { type: Boolean, optional: true },
-    updatingFavorited: { type: Boolean, optional: true },
-    deletingArticle: { type: Boolean, optional: true },
     articlesListMode: { type: Boolean, optional: true },
   };
 
@@ -69,27 +71,49 @@ export class ArticleMeta extends Component {
     });
   }
 
-  toggleFollowAuthor() {
-    let following = !this.props.article.author.following;
-    this.trigger("update-following", {
-      following: following,
-    });
-  }
-  toggleFavoriteArticle() {
-    let favorited = !this.props.article.favorited;
-    let favoritesCount = favorited
-      ? this.props.article.favoritesCount + 1
-      : this.props.article.favoritesCount - 1;
+  async updateFavorited(slug, favorited) {
+    if (!this.getters.userLoggedIn()) {
+      this.env.router.navigate({ to: "LOG_IN" });
+      return;
+    }
+    let response = {};
+    Object.assign(this.state, { updatingFavorited: true });
+    if (favorited === true) {
+      response = await this.conduitApi.favoriteArticle(slug);
+    } else {
+      response = await this.conduitApi.unfavoriteArticle(slug);
+    }
+    Object.assign(this.state, { updatingFavorited: false });
     this.trigger("update-favorited", {
-      favoritesCount: favoritesCount,
-      favorited: favorited,
+      article: response.article,
     });
   }
-  deleteArticle() {
-    this.trigger("delete-article", {
-      slug: this.props.article.slug,
+
+  async updateFollowing(username, following) {
+    if (!this.getters.userLoggedIn()) {
+      this.env.router.navigate({ to: "LOG_IN" });
+      return;
+    }
+    let response = {};
+    Object.assign(this.state, { updatingFollowing: true });
+    if (following === true) {
+      response = await conduitApi.followUser(username);
+    } else {
+      response = await conduitApi.unfollowUser(username);
+    }
+    Object.assign(this.state, { updatingFollowing: false });
+    this.trigger("update-following", {
+      profile: response.profile,
     });
   }
+  async deleteArticle(slug) {
+    this.conduitApi.deleteArticle(slug);
+    this.env.router.navigate({
+      to: "PROFILE",
+      params: { username: this.getters.getUser().username },
+    });
+  }
+
   userIsAuthor() {
     return (
       this.getters.userLoggedIn() &&

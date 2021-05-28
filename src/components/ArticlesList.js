@@ -18,7 +18,7 @@ const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
     <Pagination 
         itemsPerPage="props.queryOptions.limit" 
         totalCount="state.articlesCount"
-        currentOffset="props.queryOptions.offset"
+        currentOffset="state.currentOffset"
         t-on-update-offset="updateOffset"
     />
 </section>
@@ -59,6 +59,7 @@ export class ArticlesList extends Component {
     articles: [],
     articlesCount: 0,
     loading: false,
+    currentOffset: 0,
   });
   static props = {
     queryOptions: {
@@ -76,11 +77,13 @@ export class ArticlesList extends Component {
 
   async fetchArticles(queryOptions) {
     let response = {};
+    let queryParams = { ...queryOptions };
+    queryParams.offset = this.state.currentOffset;
     Object.assign(this.state, { loading: true });
-    if (queryOptions.feed == true) {
-      response = await this.conduitApi.getArticlesFeed(queryOptions);
+    if (queryParams.feed == true) {
+      response = await this.conduitApi.getArticlesFeed(queryParams);
     } else {
-      response = await this.conduitApi.getArticles(queryOptions);
+      response = await this.conduitApi.getArticles(queryParams);
     }
     Object.assign(this.state, response);
     Object.assign(this.state, { loading: false });
@@ -91,10 +94,18 @@ export class ArticlesList extends Component {
   }
 
   async willUpdateProps(nextProps) {
+    if (
+      nextProps.queryOptions == this.props.queryOptions &&
+      nextProps.queryOptions.offset == this.state.currentOffset
+    ) {
+      return;
+    }
+    this.state.currentOffset = this.props.queryOptions.offset;
     this.fetchArticles(nextProps.queryOptions);
   }
 
   updateOffset(ev) {
-    Object.assign(this.props.queryOptions, ev.detail);
+    this.state.currentOffset = ev.detail.offset;
+    this.fetchArticles(this.props.queryOptions);
   }
 }
