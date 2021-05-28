@@ -1,7 +1,6 @@
 import { Component, tags, hooks, useState } from "@odoo/owl";
 const { useGetters } = hooks;
 import { useApi } from "../hooks/useApi";
-import { formatDate } from "../utils/formatDate";
 
 const COMMENTS_SECTION_TEMPLATE = tags.xml/*xml*/ `
 <div class="row">
@@ -59,7 +58,6 @@ export class CommentsSection extends Component {
   static components = {};
   conduitApi = useApi();
   getters = useGetters();
-  formatDate = formatDate;
   state = useState({
     comments: [],
     loadingComments: false,
@@ -73,6 +71,15 @@ export class CommentsSection extends Component {
     },
   };
   conduitApi = useApi();
+
+  formatDate(string) {
+    let dateObject = new Date(string);
+    return dateObject.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
 
   async fetchComments(slug) {
     Object.assign(this.state, { loadingComments: true });
