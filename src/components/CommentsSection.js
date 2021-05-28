@@ -1,6 +1,7 @@
 import { Component, tags, hooks, useState } from "@odoo/owl";
 const { useGetters } = hooks;
 import { useApi } from "../hooks/useApi";
+import { formatDate } from "../utils/formatDate";
 
 const COMMENTS_SECTION_TEMPLATE = tags.xml/*xml*/ `
 <div class="row">
@@ -25,7 +26,7 @@ const COMMENTS_SECTION_TEMPLATE = tags.xml/*xml*/ `
     </form>
 
     <span t-if="state.loadingComments">Loading comments...</span>
-    <t t-foreach="state.comments" t-as="comment">
+    <t t-foreach="state.comments" t-as="comment" t-key="comment.id">
       <div class="card">
         <div class="card-block">
           <p class="card-text" t-esc="comment.body">
@@ -38,9 +39,8 @@ const COMMENTS_SECTION_TEMPLATE = tags.xml/*xml*/ `
               class="comment-author-img"
             />
           </a> <a href="" class="comment-author" t-esc="comment.author.username"></a>
-          <span class="date-posted" t-esc="getDate(comment.createdAt)">Dec 29th</span>
+          <span class="date-posted" t-esc="formatDate(comment.createdAt)"></span>
           <span class="mod-options" t-if="getters.getUser().username == comment.author.username">
-            <!-- <i class="ion-edit"></i> -->
             <i 
               class="ion-trash-a" 
               t-att-disabled="state.deletingComment"
@@ -59,6 +59,7 @@ export class CommentsSection extends Component {
   static components = {};
   conduitApi = useApi();
   getters = useGetters();
+  formatDate = formatDate;
   state = useState({
     comments: [],
     loadingComments: false,
@@ -76,7 +77,6 @@ export class CommentsSection extends Component {
   async fetchComments(slug) {
     Object.assign(this.state, { loadingComments: true });
     let response = await this.conduitApi.getComments(slug);
-    console.log(response);
     Object.assign(this.state, response);
     Object.assign(this.state, { loadingComments: false });
   }
@@ -103,7 +103,6 @@ export class CommentsSection extends Component {
   }
 
   async deleteComment(id) {
-    console.log(`deleting Comment: ${id}`);
     Object.assign(this.state, {
       deletingComment: true,
       loadingComments: true,
@@ -116,18 +115,5 @@ export class CommentsSection extends Component {
       comments: [],
     });
     this.fetchComments(this.props.articleSlug);
-  }
-
-  getDate(date) {
-    let commentDate = new Date(date);
-    return commentDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-
-  updateOffset(ev) {
-    Object.assign(this.props.queryOptions, ev.detail);
   }
 }

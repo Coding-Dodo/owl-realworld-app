@@ -92,7 +92,6 @@ function makeStore() {
   const store = new Store({ state, actions, getters });
   store.on("update", null, () => {
     localStorage.setItem("owl-realworld-app", JSON.stringify(store.state));
-    console.log(store.state);
   });
   return store;
 }

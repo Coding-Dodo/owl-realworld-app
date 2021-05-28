@@ -2,17 +2,20 @@ import { Component, tags, hooks, router } from "@odoo/owl";
 const { useGetters } = hooks;
 const { Link } = router;
 import { useApi } from "../hooks/useApi";
+import { useArticleActions } from "../hooks/useArticleActions";
+import { useProfileActions } from "../hooks/useProfileActions";
+import { formatDate } from "../utils/formatDate";
 
 const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
 <div class="article-meta">
     <a href=""><img t-att-src="props.article.author.image" /></a>
     <div class="info">
         <Link to="'PROFILE'" params="{username: props.article.author.username}" class="author" t-esc="props.article.author.username"></Link>
-        <span class="date" t-esc="getArticleDate(props.article.createdAt)"></span>
+        <span class="date" t-esc="formatDate(props.article.createdAt)"></span>
     </div>
     <!-- Articles List mode with only heart button -->
     <t t-if="props.articlesListMode">
-        <button t-attf-class="btn btn-sm pull-xs-right {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" t-att-disabled="props.updatingFavorited" t-on-click="toggleFavoriteArticle">
+        <button t-attf-class="btn btn-sm pull-xs-right {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" t-att-disabled="articleActions.state.updatingFavorited" t-on-click="articleActions.updateFavorited(props.article.slug, !props.article.favorited)">
             <i class="ion-heart"></i> <t t-esc="props.article.favoritesCount"/>
         </button>
     </t>
@@ -30,15 +33,15 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
         <span t-else="">
             <button 
                 t-attf-class="btn btn-sm {{ props.article.author.following ? 'btn-secondary' : 'btn-outline-secondary' }}" 
-                t-on-click="toggleFollowAuthor" 
-                t-att-disabled="props.updatingFollowing"
+                t-on-click="profileActions.updateFollowing(props.article.author.username, !props.article.author.following)" 
+                t-att-disabled="profileActions.state.updatingFollowing"
             >
                 <i class="ion-plus-round"></i> <t t-esc="props.article.author.following ? 'Unfollow' : 'Follow'"/> <t t-esc="props.article.author.username"/>
             </button> 
             <button 
                 t-attf-class="btn btn-sm {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" 
-                t-att-disabled="props.updatingFavorited" 
-                t-on-click="toggleFavoriteArticle"
+                t-att-disabled="articleActions.state.updatingFavorited" 
+                t-on-click="articleActions.updateFavorited(props.article.slug, !props.article.favorited)"
             >
                 <i class="ion-heart"></i> <t t-esc="props.article.favorited ? 'Unfavorite': 'Favorite'"/> Post
                 <span class="counter">(<t t-esc="props.article.favoritesCount"/>)</span>
@@ -50,46 +53,16 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
 export class ArticleMeta extends Component {
   static template = ARTICLE_META_PAGE_TEMPLATE;
   static components = { Link };
-  conduitApi = useApi();
-  getters = useGetters();
   static props = {
     article: { type: Object },
-    updatingFollowing: { type: Boolean, optional: true },
-    updatingFavorited: { type: Boolean, optional: true },
-    deletingArticle: { type: Boolean, optional: true },
     articlesListMode: { type: Boolean, optional: true },
   };
+  staticconduitApi = useApi();
+  getters = useGetters();
+  articleActions = useArticleActions();
+  profileActions = useProfileActions();
+  formatDate = formatDate;
 
-  getArticleDate(date) {
-    let articleDate = new Date(date);
-    return articleDate.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-
-  toggleFollowAuthor() {
-    let following = !this.props.article.author.following;
-    this.trigger("update-following", {
-      following: following,
-    });
-  }
-  toggleFavoriteArticle() {
-    let favorited = !this.props.article.favorited;
-    let favoritesCount = favorited
-      ? this.props.article.favoritesCount + 1
-      : this.props.article.favoritesCount - 1;
-    this.trigger("update-favorited", {
-      favoritesCount: favoritesCount,
-      favorited: favorited,
-    });
-  }
-  deleteArticle() {
-    this.trigger("delete-article", {
-      slug: this.props.article.slug,
-    });
-  }
   userIsAuthor() {
     return (
       this.getters.userLoggedIn() &&

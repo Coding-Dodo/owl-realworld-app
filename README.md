@@ -14,7 +14,22 @@ For more information on how to this works with other frontends/backends, head ov
 
 # How it works
 
-> Describe the general architecture of your app here
+Making use of:
+
+- Basic Components composition
+- OWL Store to get user state, authentication actions, getters, synchronisation with LocalStorage
+- Using Axios for API Calls
+- Routing
+  - Dynamic routing with parameters
+  - Routing guards for authenticated routes
+- `willStart`, `willUpdateProps` examples
+- events triggerring from child Components and custom event catching in Parent
+- hooks `onWillStart`, `onWillUpdateProps` for dynamic component loading data at render.
+- custom hooks to share logic with examples of:
+  - `useEnv` to access router
+  - `useGetters` to access store actions
+  - `useComponent` to trigger event
+- creating a custom `useApi` hook to demonstrate mixin/composition
 
 # Getting started
 

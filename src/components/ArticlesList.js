@@ -5,17 +5,17 @@ import { useApi } from "../hooks/useApi";
 
 const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
 <section>
-    <t t-foreach="state.articles" t-as="article">
+    <t t-foreach="state.articles" t-as="article" t-key="article.slug">
         <ArticlePreview article="article"/>
     </t>
     <span class="loading-articles" t-if="state.loading">
         Loading Articles...
     </span>
     <Pagination 
+        t-if="! state.loading"
         itemsPerPage="props.queryOptions.limit" 
         totalCount="state.articlesCount"
-        currentOffset="props.queryOptions.offset"
-        t-on-update-offset="updateOffset"
+        currentOffset="state.currentOffset"
     />
 </section>
 `;
@@ -27,6 +27,7 @@ export class ArticlesList extends Component {
     articles: [],
     articlesCount: 0,
     loading: false,
+    currentOffset: 0,
   });
   static props = {
     queryOptions: {
@@ -61,15 +62,14 @@ export class ArticlesList extends Component {
   async willUpdateProps(nextProps) {
     if (
       nextProps.queryOptions == this.props.queryOptions &&
-      this.state.articles.length > 0
+      this.state.currentOffset == nextProps.queryOptions.offset
     ) {
       return;
     }
-    Object.assign(this.state, { articles: [] });
+    Object.assign(this.state, {
+      articles: [],
+      currentOffset: nextProps.queryOptions.offset,
+    });
     this.fetchArticles(nextProps.queryOptions);
-  }
-
-  updateOffset(ev) {
-    Object.assign(this.props.queryOptions, ev.detail);
   }
 }

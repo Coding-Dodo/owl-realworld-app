@@ -31,7 +31,7 @@ const REGISTER_TEMPLATE = xml/* xml */ `
           <fieldset class="form-group">
             <input class="form-control form-control-lg" type="password" placeholder="Password" t-model="state.password"/>
           </fieldset>
-          <button class="btn btn-lg btn-primary pull-xs-right" t-on-click="register" t-att-disabled="state.loading">
+          <button class="btn btn-lg btn-primary pull-xs-right" t-on-click.prevent="register" t-att-disabled="state.loading">
             Sign up
           </button>
         </form>
@@ -54,10 +54,8 @@ export class Register extends Component {
     loading: false,
   });
 
-  async register(ev) {
-    ev.preventDefault();
+  async register() {
     if (this.state.loading) return;
-
     this.state.errors = {};
     this.state.loading = true;
     let response = await this.conduitApi.register(
@@ -71,7 +69,6 @@ export class Register extends Component {
       this.env.router.navigate({ to: "HOME" });
     } else {
       if (response.errors) {
-        console.log(response.errors);
         this.state.errors = response.errors;
       }
     }

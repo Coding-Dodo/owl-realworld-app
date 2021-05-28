@@ -13,12 +13,8 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
       <h1 t-esc="articleState.article.title"></h1>
       <ArticleMeta 
         article="articleState.article" 
-        t-on-update-following="updateFollowing" 
-        t-on-update-favorited="updateFavorited"
-        t-on-delete-article="deleteArticle"
-        updatingFollowing="state.updatingFollowing"
-        updatingFavorited="state.updatingFavorited"
-        deletingArticle="state.deletingArticle"
+        t-on-update-following="onUpdateFollowing" 
+        t-on-update-favorited="onUpdateFavorited"
       />
     </div>
   </div>
@@ -33,12 +29,8 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
     <div class="article-actions">
       <ArticleMeta 
         article="articleState.article" 
-        t-on-update-following="updateFollowing" 
-        t-on-update-favorited="updateFavorited"
-        t-on-delete-article="deleteArticle"
-        updatingFollowing="state.updatingFollowing"
-        updatingFavorited="state.updatingFavorited"
-        deletingArticle="state.deletingArticle"
+        t-on-update-following="onUpdateFollowing" 
+        t-on-update-favorited="onUpdateFavorited"
       />
     </div>
 
@@ -46,6 +38,7 @@ const ARTICLE_PAGE_TEMPLATE = tags.xml/* xml */ `
   </div>
 </div>
 `;
+
 export class ArticlePage extends Component {
   static template = ARTICLE_PAGE_TEMPLATE;
   static components = { ArticleMeta, CommentsSection };
@@ -62,45 +55,11 @@ export class ArticlePage extends Component {
     return marked(content);
   }
 
-  async deleteArticle(ev) {
-    await this.conduitApi.deleteArticle(ev.detail.slug);
-    this.env.router.navigate({
-      to: "PROFILE",
-      params: { username: this.getters.getUser().username },
-    });
+  async onUpdateFollowing(ev) {
+    Object.assign(this.articleState.article.author, ev.detail.profile);
   }
 
-  async updateFollowing(ev) {
-    if (!this.getters.userLoggedIn()) {
-      this.env.router.navigate({ to: "LOG_IN" });
-      return;
-    }
-    Object.assign(this.state, { updatingFollowing: true });
-    if (ev.detail.following === true) {
-      await this.conduitApi.followUser(
-        this.articleState.article.author.username
-      );
-    } else {
-      await this.conduitApi.unfollowUser(
-        this.articleState.article.author.username
-      );
-    }
-    Object.assign(this.state, { updatingFollowing: false });
-    Object.assign(this.articleState.article.author, ev.detail);
-  }
-
-  async updateFavorited(ev) {
-    if (!this.getters.userLoggedIn()) {
-      this.env.router.navigate({ to: "LOG_IN" });
-      return;
-    }
-    Object.assign(this.state, { updatingFavorited: true });
-    if (ev.detail.favorited === true) {
-      await this.conduitApi.favoriteArticle(this.articleState.article.slug);
-    } else {
-      await this.conduitApi.unfavoriteArticle(this.articleState.article.slug);
-    }
-    Object.assign(this.state, { updatingFavorited: false });
-    Object.assign(this.articleState.article, ev.detail);
+  onUpdateFavorited(ev) {
+    Object.assign(this.articleState.article, ev.detail.article);
   }
 }

@@ -38,7 +38,7 @@ const SETTINGS_TEMPLATE = xml/* xml */ `
           </fieldset>
         </form>
         <hr/>
-        <button class="btn btn-outline-danger" t-on-click="logout">Or click here to logout.</button>
+        <button class="btn btn-outline-danger" t-on-click.prevent="logout">Or click here to logout.</button>
       </div>
 
     </div>
@@ -99,15 +99,13 @@ export class Settings extends Component {
       }
     } else {
       if (response.errors) {
-        console.log(response.errors);
         this.state.errors = response.errors;
       }
     }
     this.state.loading = false;
   }
 
-  logout(ev) {
-    ev.preventDefault();
+  logout() {
     this.dispatch("logout");
     this.env.router.navigate({ to: "HOME" });
   }

@@ -1,8 +1,10 @@
-import { Component, tags, useState, hooks, router } from "@odoo/owl";
+import { Component, tags, useState, hooks, router, utils } from "@odoo/owl";
+const { debounce } = utils;
 const { useGetters } = hooks;
 const { Link } = router;
 import { useApi } from "../hooks/useApi";
 import { ArticlesList } from "../components/ArticlesList";
+import { useProfileActions } from "../hooks/useProfileActions";
 const { xml } = tags;
 
 const PROFILE_TEMPLATE = xml/* xml */ `
@@ -24,7 +26,7 @@ const PROFILE_TEMPLATE = xml/* xml */ `
                     <button 
                         class="btn btn-sm btn-outline-secondary action-btn" 
                         t-attf-class="btn btn-sm action-btn {{ state.profile.following ? 'btn-secondary' : 'btn-outline-secondary' }}" 
-                        t-att-disabled="state.updatingFollowing"
+                        t-att-disabled="profileActions.state.updatingFollowing"
                         t-on-click.prevent="updateFollowing"
                     >
                         <i class="ion-plus-round"></i> <t t-esc="state.profile.following ? 'Unfollow' : 'Follow'"/> <t t-esc="state.profile.username"/>
@@ -58,7 +60,7 @@ const PROFILE_TEMPLATE = xml/* xml */ `
                 </li>
                 </ul>
             </div>
-            <ArticlesList queryOptions="state.articlesOptions"/>
+            <ArticlesList queryOptions="state.articlesOptions" t-on-update-offset="updateOffset"/>
         </div>
     </div>
     </div>
@@ -70,11 +72,11 @@ export class Profile extends Component {
   static components = { ArticlesList, Link };
   conduitApi = useApi();
   getters = useGetters();
+  profileActions = useProfileActions();
   state = useState({
     profile: {},
     navigationMode: "",
     articlesOptions: {},
-    updatingFollowing: false,
   });
 
   async fetchProfile(username) {
@@ -93,19 +95,11 @@ export class Profile extends Component {
   }
 
   async updateFollowing() {
-    if (!this.getters.userLoggedIn()) {
-      this.env.router.navigate({ to: "LOG_IN" });
-      return;
-    }
-    let newFollowingState = !this.state.profile.following;
-    Object.assign(this.state, { updatingFollowing: true });
-    if (newFollowingState === true) {
-      await this.conduitApi.followUser(this.state.profile.username);
-    } else {
-      await this.conduitApi.unfollowUser(this.state.profile.username);
-    }
-    Object.assign(this.state, { updatingFollowing: false });
-    Object.assign(this.state.profile, { following: newFollowingState });
+    let profile = await this.profileActions.updateFollowing(
+      this.state.profile.username,
+      !this.state.profile.following
+    );
+    Object.assign(this.state.profile, profile);
   }
 
   async willUpdateProps() {
@@ -146,5 +140,8 @@ export class Profile extends Component {
       navigationMode: navigationMode,
       articlesOptions: articlesOptions,
     });
+  }
+  updateOffset(ev) {
+    this.state.articlesOptions.offset = ev.detail.offset;
   }
 }

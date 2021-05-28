@@ -35,6 +35,7 @@ export class Pagination extends Component {
       offset: offset,
     });
   }
+
   getPagination() {
     let m = parseInt(this.props.totalCount / this.props.itemsPerPage);
     let c = this.getCurrentPage();
