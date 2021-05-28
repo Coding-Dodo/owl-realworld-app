@@ -8,6 +8,7 @@ import builtins from "rollup-plugin-node-builtins";
 import globals from "rollup-plugin-node-globals";
 import copy from "rollup-plugin-copy";
 import replace from "rollup-plugin-replace";
+import babel from "rollup-plugin-babel";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -33,6 +34,9 @@ export default [
       globals(),
       copy({
         targets: [{ src: "public/index.html", dest: "dist" }],
+      }),
+      babel({
+        exclude: "node_modules/**",
       }),
       !isProduction &&
         serve({
