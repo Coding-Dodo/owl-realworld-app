@@ -5,8 +5,7 @@ const Link = router.Link;
 const ARTICLE_PREVIEW_TEMPLATE = tags.xml/*xml*/ `
 <div class="article-preview">
     <ArticleMeta 
-        article="props.article"  
-        t-on-update-favorited="onUpdateFavorited"
+        article="props.article"
         articlesListMode="true"
       />
     <Link to="'ARTICLE'" params="{slug: props.article.slug}" class="preview-link">
@@ -22,7 +21,4 @@ export class ArticlePreview extends Component {
   static props = {
     article: { type: Object },
   };
-  onUpdateFavorited(ev) {
-    Object.assign(this.props.article, ev.detail.article);
-  }
 }

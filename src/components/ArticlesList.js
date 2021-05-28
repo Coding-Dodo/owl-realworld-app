@@ -6,7 +6,7 @@ import { useApi } from "../hooks/useApi";
 const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
 <section>
     <t t-foreach="state.articles" t-as="article" t-key="article.slug">
-        <ArticlePreview article="article"/>
+        <ArticlePreview article="article" t-on-update-favorited="onUpdateFavorited(article)"/>
     </t>
     <span class="loading-articles" t-if="state.loading">
         Loading Articles...
@@ -71,5 +71,9 @@ export class ArticlesList extends Component {
       currentOffset: nextProps.queryOptions.offset,
     });
     this.fetchArticles(nextProps.queryOptions);
+  }
+
+  onUpdateFavorited(article, ev) {
+    Object.assign(article, ev.detail.article);
   }
 }
