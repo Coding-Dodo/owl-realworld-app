@@ -1,6 +1,5 @@
 import { Component, tags, router } from "@odoo/owl";
 import { ArticleMeta } from "./ArticleMeta";
-import { formatDate } from "../utilities/formatDate";
 const Link = router.Link;
 
 const ARTICLE_PREVIEW_TEMPLATE = tags.xml/*xml*/ `
@@ -20,7 +19,6 @@ const ARTICLE_PREVIEW_TEMPLATE = tags.xml/*xml*/ `
 export class ArticlePreview extends Component {
   static template = ARTICLE_PREVIEW_TEMPLATE;
   static components = { Link, ArticleMeta };
-  static formatDate = formatDate;
   static props = {
     article: { type: Object },
   };

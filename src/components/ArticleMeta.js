@@ -4,7 +4,6 @@ const { Link } = router;
 import { useApi } from "../hooks/useApi";
 import { useArticleActions } from "../hooks/useArticleActions";
 import { useProfileActions } from "../hooks/useProfileActions";
-import { formatDate } from "../utilities/formatDate";
 
 const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
 <div class="article-meta">
@@ -61,7 +60,15 @@ export class ArticleMeta extends Component {
   getters = useGetters();
   articleActions = useArticleActions();
   profileActions = useProfileActions();
-  static formatDate = formatDate;
+
+  formatDate(string) {
+    let dateObject = new Date(string);
+    return dateObject.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
 
   userIsAuthor() {
     return (
