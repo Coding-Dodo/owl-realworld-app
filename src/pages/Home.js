@@ -40,7 +40,7 @@ const HOME_TEMPLATE = tags.xml/*xml*/ `
                         </li>
                     </ul>
                 </div>
-                <ArticlesList queryOptions="state.articlesOptions"/>
+                <ArticlesList queryOptions="state.articlesOptions" t-on-update-offset="updateOffset"/>
             </div>
             <TagsCloud t-on-tag-selected="onTagSelected"/>
         </div>
@@ -98,5 +98,13 @@ export class Home extends Component {
       this.state.text === "A place to share your knowledge."
         ? "An OWL (Odoo Web Library) RealWorld App"
         : "A place to share your knowledge.";
+  }
+
+  updateOffset(ev) {
+    let newArticlesOptions = {
+      ...this.state.articlesOptions,
+      offset: ev.detail.offset,
+    };
+    Object.assign(this.state, { articlesOptions: newArticlesOptions });
   }
 }

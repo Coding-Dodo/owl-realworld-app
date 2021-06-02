@@ -1,4 +1,5 @@
 import { Component, tags, hooks, useState } from "@odoo/owl";
+import { deepEqual } from "../utils/utils.js";
 const { onWillUpdateProps, onWillStart } = hooks;
 import { Article } from "./Article";
 import { Pagination } from "./Pagination";
@@ -18,8 +19,7 @@ const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
     <Pagination 
         itemsPerPage="props.queryOptions.limit" 
         totalCount="state.articlesCount"
-        currentOffset="state.currentOffset"
-        t-on-update-offset="updateOffset"
+        currentOffset="props.queryOptions.offset"
     />
 </section>
 `;
@@ -77,13 +77,11 @@ export class ArticlesList extends Component {
 
   async fetchArticles(queryOptions) {
     let response = {};
-    let queryParams = { ...queryOptions };
-    queryParams.offset = this.state.currentOffset;
     Object.assign(this.state, { loading: true });
-    if (queryParams.feed == true) {
-      response = await this.conduitApi.getArticlesFeed(queryParams);
+    if (queryOptions.feed == true) {
+      response = await this.conduitApi.getArticlesFeed(queryOptions);
     } else {
-      response = await this.conduitApi.getArticles(queryParams);
+      response = await this.conduitApi.getArticles(queryOptions);
     }
     Object.assign(this.state, response);
     Object.assign(this.state, { loading: false });
@@ -94,18 +92,9 @@ export class ArticlesList extends Component {
   }
 
   async willUpdateProps(nextProps) {
-    if (
-      nextProps.queryOptions == this.props.queryOptions &&
-      nextProps.queryOptions.offset == this.state.currentOffset
-    ) {
+    if (deepEqual(nextProps.queryOptions, this.props.queryOptions)) {
       return;
     }
-    this.state.currentOffset = this.props.queryOptions.offset;
     this.fetchArticles(nextProps.queryOptions);
-  }
-
-  updateOffset(ev) {
-    this.state.currentOffset = ev.detail.offset;
-    this.fetchArticles(this.props.queryOptions);
   }
 }
