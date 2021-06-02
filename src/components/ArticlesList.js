@@ -2,6 +2,7 @@ import { Component, tags, useState } from "@odoo/owl";
 import { ArticlePreview } from "./ArticlePreview";
 import { Pagination } from "./Pagination";
 import { useApi } from "../hooks/useApi";
+import { deepEqual } from "../utilities/deepEqual";
 
 const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
 <section>
@@ -15,7 +16,7 @@ const ARTICLESLIST_TEMPLATE = tags.xml/*xml*/ `
         t-if="! state.loading"
         itemsPerPage="props.queryOptions.limit" 
         totalCount="state.articlesCount"
-        currentOffset="state.currentOffset"
+        currentOffset="props.queryOptions.offset"
     />
 </section>
 `;
@@ -27,7 +28,6 @@ export class ArticlesList extends Component {
     articles: [],
     articlesCount: 0,
     loading: false,
-    currentOffset: 0,
   });
   static props = {
     queryOptions: {
@@ -41,7 +41,6 @@ export class ArticlesList extends Component {
       offset: { type: Number, optional: true },
     },
   };
-  conduitApi = useApi();
 
   async fetchArticles(queryOptions) {
     let response = {};
@@ -60,15 +59,11 @@ export class ArticlesList extends Component {
   }
 
   async willUpdateProps(nextProps) {
-    if (
-      nextProps.queryOptions == this.props.queryOptions &&
-      this.state.currentOffset == nextProps.queryOptions.offset
-    ) {
+    if (deepEqual(nextProps.queryOptions, this.props.queryOptions)) {
       return;
     }
     Object.assign(this.state, {
       articles: [],
-      currentOffset: nextProps.queryOptions.offset,
     });
     this.fetchArticles(nextProps.queryOptions);
   }
