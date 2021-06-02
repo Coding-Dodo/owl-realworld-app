@@ -10,6 +10,10 @@ This codebase was created to demonstrate a fully fledged fullstack application b
 
 This is best use as learning material, some part of the code can still be refactored but over-complexity is not the intent here. This implementation is meant to cover all of OWL features in a complete application example.
 
+The whole process of creating this implementation is available as a tutorial series:
+
+- [First Part: Presentation, Components composition, Architecture and Routing](https://codingdodo.com/realworld-app-with-owl-odoo-web-library-part-1/)
+
 For more information on how to this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
 
 # How it works
