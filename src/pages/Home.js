@@ -89,7 +89,11 @@ export class Home extends Component {
     });
   }
   updateOffset(ev) {
-    this.state.articlesOptions.offset = ev.detail.offset;
+    let newArticlesOptions = {
+      ...this.state.articlesOptions,
+      offset: ev.detail.offset,
+    };
+    Object.assign(this.state, { articlesOptions: newArticlesOptions });
   }
 
   onTagSelected(ev) {
