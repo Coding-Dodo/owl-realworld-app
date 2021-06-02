@@ -1,9 +1,9 @@
 import { Component, tags, hooks, router } from "@odoo/owl";
 const { useGetters } = hooks;
 const { Link } = router;
-import { useApi } from "../hooks/useApi";
 import { useArticleActions } from "../hooks/useArticleActions";
 import { useProfileActions } from "../hooks/useProfileActions";
+import { formatDate } from "../utilities/formatdate";
 
 const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
 <div class="article-meta">
@@ -14,7 +14,7 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
     </div>
     <!-- Articles List mode with only heart button -->
     <t t-if="props.articlesListMode">
-        <button t-attf-class="btn btn-sm pull-xs-right {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" t-att-disabled="articleActions.state.updatingFavorited" t-on-click="articleActions.updateFavorited(props.article.slug, !props.article.favorited)">
+        <button t-attf-class="btn btn-sm pull-xs-right {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" t-att-disabled="state.updatingFavorited" t-on-click="updateFavorited(props.article.slug, !props.article.favorited)">
             <i class="ion-heart"></i> <t t-esc="props.article.favoritesCount"/>
         </button>
     </t>
@@ -32,15 +32,15 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
         <span t-else="">
             <button 
                 t-attf-class="btn btn-sm {{ props.article.author.following ? 'btn-secondary' : 'btn-outline-secondary' }}" 
-                t-on-click="profileActions.updateFollowing(props.article.author.username, !props.article.author.following)" 
-                t-att-disabled="profileActions.state.updatingFollowing"
+                t-on-click="updateFollowing(props.article.author.username, !props.article.author.following)" 
+                t-att-disabled="state.updatingFollowing"
             >
                 <i class="ion-plus-round"></i> <t t-esc="props.article.author.following ? 'Unfollow' : 'Follow'"/> <t t-esc="props.article.author.username"/>
             </button> 
             <button 
                 t-attf-class="btn btn-sm {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" 
-                t-att-disabled="articleActions.state.updatingFavorited" 
-                t-on-click="articleActions.updateFavorited(props.article.slug, !props.article.favorited)"
+                t-att-disabled="state.updatingFavorited" 
+                t-on-click="updateFavorited(props.article.slug, !props.article.favorited)"
             >
                 <i class="ion-heart"></i> <t t-esc="props.article.favorited ? 'Unfavorite': 'Favorite'"/> Post
                 <span class="counter">(<t t-esc="props.article.favoritesCount"/>)</span>
@@ -56,18 +56,12 @@ export class ArticleMeta extends Component {
     article: { type: Object },
     articlesListMode: { type: Boolean, optional: true },
   };
-  staticconduitApi = useApi();
   getters = useGetters();
-  articleActions = useArticleActions();
-  profileActions = useProfileActions();
+  formatDate = formatDate;
 
-  formatDate(string) {
-    let dateObject = new Date(string);
-    return dateObject.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+  constructor(...args) {
+    super(...args);
+    Object.assign(this, { ...useArticleActions(), ...useProfileActions() });
   }
 
   userIsAuthor() {
