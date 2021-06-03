@@ -25,7 +25,7 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
                 <i class="ion-edit"></i> Edit Article
             </Link>
 
-            <button t-attf-class="btn btn-outline-danger btn-sm" t-on-click.prevent="deleteArticle">
+            <button t-attf-class="btn btn-outline-danger btn-sm" t-on-click.prevent="deleteArticle(props.article.slug)">
                 <i class="ion-trash-a"></i> Delete Article
             </button>
         </span>

@@ -30,7 +30,7 @@ export function useArticleActions() {
     return response.article;
   };
   const deleteArticle = async (slug) => {
-    conduitApi.deleteArticle(ev.detail.slug);
+    conduitApi.deleteArticle(slug);
     env.router.navigate({
       to: "PROFILE",
       params: { username: getters.getUser().username },
