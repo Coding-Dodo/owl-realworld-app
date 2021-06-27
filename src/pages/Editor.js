@@ -18,13 +18,13 @@ const EDITOR_TEMPLATE = xml/* xml */ `
         <form>
           <fieldset>
             <fieldset class="form-group">
-                <input type="text" class="form-control form-control-lg" placeholder="Article Title" t-model="articleState.article.title" t-att-disabled="state.publishingArticle"/>
+                <input type="text" class="form-control form-control-lg" placeholder="Article Title" t-model="article.title" t-att-disabled="state.publishingArticle"/>
             </fieldset>
             <fieldset class="form-group">
-                <input type="text" class="form-control" placeholder="What's this article about?" t-model="articleState.article.description" t-att-disabled="state.publishingArticle"/>
+                <input type="text" class="form-control" placeholder="What's this article about?" t-model="article.description" t-att-disabled="state.publishingArticle"/>
             </fieldset>
             <fieldset class="form-group">
-                <textarea class="form-control" rows="8" placeholder="Write your article (in markdown)" t-model="articleState.article.body" t-att-disabled="state.publishingArticle"></textarea>
+                <textarea class="form-control" rows="8" placeholder="Write your article (in markdown)" t-model="article.body" t-att-disabled="state.publishingArticle"></textarea>
             </fieldset>
             <fieldset class="form-group">
                 <input type="text" class="form-control" placeholder="Enter tags" t-att-disabled="state.publishingArticle"/><div class="tag-list"></div>
@@ -47,19 +47,19 @@ export class Editor extends Component {
     publishingArticle: false,
     errors: {},
   });
-  articleState = useArticleLoader();
+  article = useArticleLoader();
   conduitApi = useApi();
 
   async publishArticle() {
     let response = {};
     Object.assign(this.state, { publishingArticle: true });
-    if (this.articleState.article.slug) {
+    if (this.article.slug) {
       response = await this.conduitApi.updateArticle(
-        this.articleState.article.slug,
-        this.articleState.article
+        this.article.slug,
+        this.article
       );
     } else {
-      response = await this.conduitApi.createArticle(this.articleState.article);
+      response = await this.conduitApi.createArticle(this.article);
     }
     Object.assign(this.state, { publishingArticle: false });
     if (response.article) {
