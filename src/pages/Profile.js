@@ -26,8 +26,8 @@ const PROFILE_TEMPLATE = xml/* xml */ `
                     <button 
                         class="btn btn-sm btn-outline-secondary action-btn" 
                         t-attf-class="btn btn-sm action-btn {{ state.profile.following ? 'btn-secondary' : 'btn-outline-secondary' }}" 
-                        t-att-disabled="profileActions.state.updatingFollowing"
-                        t-on-click.prevent="updateFollowing"
+                        t-att-disabled="state.updatingFollowing"
+                        t-on-click.prevent="actionUpdateFollowing"
                     >
                         <i class="ion-plus-round"></i> <t t-esc="state.profile.following ? 'Unfollow' : 'Follow'"/> <t t-esc="state.profile.username"/>
                     </button>
@@ -72,12 +72,16 @@ export class Profile extends Component {
   static components = { ArticlesList, Link };
   conduitApi = useApi();
   getters = useGetters();
-  profileActions = useProfileActions();
-  state = useState({
-    profile: {},
-    navigationMode: "",
-    articlesOptions: {},
-  });
+
+  constructor(...args) {
+    super(...args);
+    this.state = useState({
+      profile: {},
+      navigationMode: "",
+      articlesOptions: {},
+    });
+    Object.assign(this, { ...useProfileActions() });
+  }
 
   async fetchProfile(username) {
     let response = await this.conduitApi.getProfile(username);
@@ -94,8 +98,8 @@ export class Profile extends Component {
     }
   }
 
-  async updateFollowing() {
-    let profile = await this.profileActions.updateFollowing(
+  async actionUpdateFollowing() {
+    let profile = await this.updateFollowing(
       this.state.profile.username,
       !this.state.profile.following
     );
