@@ -50,5 +50,8 @@ export default [
       !isProduction && livereload(),
       isProduction && terser.terser(),
     ],
+    watch: {
+      exclude: ["node_modules/**"],
+    },
   },
 ];
