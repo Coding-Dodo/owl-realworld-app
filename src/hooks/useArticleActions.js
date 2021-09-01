@@ -9,7 +9,6 @@ export function useArticleActions() {
   const comp = useComponent();
   const state = useState({
     updatingFavorited: false,
-    deltingArticle: false,
   });
   const updateFavorited = async (slug, favorited) => {
     if (!getters.userLoggedIn()) {
