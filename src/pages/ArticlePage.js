@@ -47,7 +47,6 @@ export class ArticlePage extends Component {
   state = useState({
     updatingFollowing: false,
     updatingFavorited: false,
-    deletingArticle: false,
   });
   article = useArticleLoader();
 

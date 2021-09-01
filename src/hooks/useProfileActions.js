@@ -9,7 +9,6 @@ export function useProfileActions() {
   const comp = useComponent();
   const state = useState({
     updatingFollowing: false,
-    deltingArticle: false,
   });
   const updateFollowing = async (username, following) => {
     if (!getters.userLoggedIn()) {
