@@ -1,6 +1,6 @@
 import { App } from "../../src/App";
 import { makeTestFixture, nextTick, click } from "../helpers";
-import { mount, router, QWeb } from "@odoo/owl";
+import { router, mount, QWeb, Store } from "@odoo/owl";
 
 import {
   LogIn,
@@ -20,11 +20,41 @@ export const ROUTES = [
   { name: "PROFILE", path: "/profile", component: Profile },
 ];
 
-async function makeEnvironment() {
-  const env = { qweb: new QWeb() };
+const actions = {
+  logout({ state }) {
+    state.user = {};
+  },
+  login({ state }, user) {
+    state.user = user;
+  },
+};
+
+const initialState = {
+  user: {},
+};
+const getters = {
+  userLoggedIn({ state }) {
+    if (state.user && state.user.token) {
+      return true;
+    }
+    return false;
+  },
+  getUser({ state }) {
+    return state.user;
+  },
+};
+
+async function makeEnvironment(store) {
+  const env = { qweb: new QWeb(), store: store };
   env.router = new router.Router(env, ROUTES, { mode: "hash" });
   await env.router.start();
   return env;
+}
+
+function makeStore() {
+  const state = initialState;
+  const store = new Store({ state, actions, getters });
+  return store;
 }
 
 let fixture;
@@ -39,18 +69,11 @@ afterEach(() => {
 
 describe("App", () => {
   test("App is instantiated as expected...", async () => {
-    App.env = await makeEnvironment();
+    let store = makeStore();
+    App.env = await makeEnvironment(store);
     await mount(App, { target: fixture });
     expect(fixture.innerHTML).toContain("nav");
     expect(fixture.innerHTML).toContain("footer");
     expect(fixture.innerHTML).toContain("A place to share your knowledge.");
-    click(fixture, "div.banner");
-    await nextTick();
-    expect(fixture.innerHTML).toContain(
-      "An OWL (Odoo Web Library) RealWorld App"
-    );
-    click(fixture, "a.nav-link-editor");
-    await nextTick();
-    expect(fixture.innerHTML).toContain("Publish Article");
   });
 });
