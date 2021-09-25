@@ -1,22 +1,22 @@
 import { hooks } from "@odoo/owl";
 const { useStore } = hooks;
-import axios from "axios";
-axios.defaults.baseURL = "https://conduit.productionready.io/api"; // the prefix of the URL
-axios.defaults.headers.get["Accept"] = "application/json"; // default header for all get request
-axios.defaults.headers.post["Accept"] = "application/json"; // default header for all POST request
+import axios from "redaxios";
 
 class ApiService {
   constructor(token) {
+    let config = {
+      baseURL: "https://conduit.productionready.io/api",
+      timeout: 1000,
+    };
     if (token) {
-      axios.defaults.headers.common = { Authorization: `Token ${token}` };
-    } else {
-      axios.defaults.headers.common = {};
+      config.headers = { Authorization: `Token ${token}` };
     }
+    this.service = axios.create(config);
   }
 
   async getProfile(username) {
     let response = {};
-    await axios
+    await this.service
       .get(`/profiles/${username}`)
       .then((res) => {
         if (res.data && res.data) {
@@ -32,7 +32,7 @@ class ApiService {
   }
   async user() {
     let response = {};
-    await axios
+    await this.service
       .get("/user")
       .then((res) => {
         if (res.data && res.data.user) {
@@ -49,7 +49,7 @@ class ApiService {
 
   async login(email, password) {
     let response = {};
-    await axios
+    await this.service
       .post("/users/login", {
         user: {
           email: email,
@@ -70,7 +70,7 @@ class ApiService {
   }
   async register(username, email, password) {
     let response = {};
-    await axios
+    await this.service
       .post("/users", {
         user: {
           username: username,
@@ -92,7 +92,7 @@ class ApiService {
   }
   async updateUser(userData) {
     let response = {};
-    await axios
+    await this.service
       .put("/user", {
         user: userData,
       })
@@ -110,7 +110,7 @@ class ApiService {
   }
   async getArticle(slug) {
     let response = {};
-    await axios
+    await this.service
       .get(`/articles/${slug}`)
       .then((res) => {
         if (res.data && res.data) {
@@ -126,7 +126,7 @@ class ApiService {
   }
   async updateArticle(slug, article) {
     let response = {};
-    await axios
+    await this.service
       .put(`/articles/${slug}`, {
         article: article,
       })
@@ -144,7 +144,7 @@ class ApiService {
   }
   async deleteArticle(slug) {
     let response = {};
-    await axios
+    await this.service
       .delete(`/articles/${slug}`)
       .then((res) => {
         if (res.data && res.data) {
@@ -160,7 +160,7 @@ class ApiService {
   }
   async createArticle(article) {
     let response = {};
-    await axios
+    await this.service
       .post(`/articles`, {
         article: article,
       })
@@ -178,7 +178,7 @@ class ApiService {
   }
   async getArticles(queryOptions) {
     let response = {};
-    await axios
+    await this.service
       .get("/articles", { params: queryOptions })
       .then((res) => {
         if (res.data && res.data) {
@@ -194,7 +194,7 @@ class ApiService {
   }
   async getArticlesFeed(queryOptions) {
     let response = {};
-    await axios
+    await this.service
       .get("/articles/feed", { params: queryOptions })
       .then((res) => {
         if (res.data && res.data) {
@@ -210,7 +210,7 @@ class ApiService {
   }
   async getTags() {
     let response = {};
-    await axios
+    await this.service
       .get("/tags")
       .then((res) => {
         if (res.data && res.data) {
@@ -226,7 +226,7 @@ class ApiService {
   }
   async getComments(slug) {
     let response = {};
-    await axios
+    await this.service
       .get(`/articles/${slug}/comments`)
       .then((res) => {
         if (res.data && res.data) {
@@ -242,7 +242,7 @@ class ApiService {
   }
   async addComment(slug, body) {
     let response = {};
-    await axios
+    await this.service
       .post(`/articles/${slug}/comments`, {
         comment: {
           body: body,
@@ -262,7 +262,7 @@ class ApiService {
   }
   async deleteComment(slug, commentId) {
     let response = {};
-    await axios
+    await this.service
       .delete(`/articles/${slug}/comments/${commentId}`)
       .then((res) => {
         if (res.data && res.data) {
@@ -278,7 +278,7 @@ class ApiService {
   }
   async unfavoriteArticle(slug) {
     let response = {};
-    await axios
+    await this.service
       .delete(`/articles/${slug}/favorite`)
       .then((res) => {
         if (res.data && res.data) {
@@ -294,7 +294,7 @@ class ApiService {
   }
   async favoriteArticle(slug) {
     let response = {};
-    await axios
+    await this.service
       .post(`/articles/${slug}/favorite`)
       .then((res) => {
         if (res.data && res.data) {
@@ -310,7 +310,7 @@ class ApiService {
   }
   async followUser(username) {
     let response = {};
-    await axios
+    await this.service
       .post(`/profiles/${username}/follow`)
       .then((res) => {
         if (res.data && res.data) {
@@ -326,7 +326,7 @@ class ApiService {
   }
   async unfollowUser(username) {
     let response = {};
-    await axios
+    await this.service
       .delete(`/profiles/${username}/follow`)
       .then((res) => {
         if (res.data && res.data) {
