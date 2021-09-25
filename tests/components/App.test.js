@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { App } from "../../src/App";
 import { makeTestFixture, nextTick, click } from "../helpers";
 import { router, mount, QWeb, Store } from "@odoo/owl";
