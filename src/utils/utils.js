@@ -1,5 +1,3 @@
-import "regenerator-runtime/runtime";
-
 function isObject(object) {
   return object != null && typeof object === "object";
 }
