@@ -39,7 +39,7 @@
     "ws": "^7.4.5"
   },
   "dependencies": {
-    "@odoo/owl": "^1.2.6"
+    "@odoo/owl": "^1.4.5",
   },
   "jest": {
     "verbose": false,
