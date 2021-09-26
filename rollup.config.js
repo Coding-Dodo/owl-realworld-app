@@ -4,8 +4,8 @@ import commonjs from "@rollup/plugin-commonjs";
 import livereload from "rollup-plugin-livereload";
 import terser from "rollup-plugin-terser";
 import copy from "rollup-plugin-copy";
-import replace from "rollup-plugin-replace";
-import babel from "rollup-plugin-babel";
+import babel from "@rollup/plugin-babel";
+import replace from "@rollup/plugin-replace";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -21,6 +21,7 @@ export default [
     plugins: [
       replace({
         "process.env.OWL_ENV": isProduction ? '"production"' : '"dev"',
+        preventAssignment: true,
       }),
       nodeResolve({ preferBuiltins: true }),
       commonjs(),
