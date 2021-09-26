@@ -1,25 +1,24 @@
 import { hooks } from "@odoo/owl";
 const { useStore } = hooks;
-import axios from "axios";
-axios.defaults.baseURL = "https://conduit.productionready.io/api"; // the prefix of the URL
-axios.defaults.headers.get["Accept"] = "application/json"; // default header for all get request
-axios.defaults.headers.post["Accept"] = "application/json"; // default header for all POST request
+import axios from "redaxios";
 
 class ApiService {
   constructor(token) {
+    let config = {
+      baseURL: "https://conduit.productionready.io/api",
+      timeout: 1000,
+    };
     if (token) {
-      axios.defaults.headers.common = { Authorization: `Token ${token}` };
-    } else {
-      axios.defaults.headers.common = {};
+      config.headers = { Authorization: `Token ${token}` };
     }
+    this.service = axios.create(config);
   }
 
   async user() {
     let response = {};
-    await axios
+    await this.service
       .get("/user")
       .then((res) => {
-        console.log(res);
         if (res.data && res.data.user) {
           response = res.data.user;
         }
@@ -34,7 +33,7 @@ class ApiService {
 
   async login(email, password) {
     let response = {};
-    await axios
+    await this.service
       .post("/users/login", {
         user: {
           email: email,
@@ -42,7 +41,6 @@ class ApiService {
         },
       })
       .then((res) => {
-        console.log(res);
         if (res.data && res.data.user) {
           response = res.data.user;
         }
@@ -56,7 +54,7 @@ class ApiService {
   }
   async register(username, email, password) {
     let response = {};
-    await axios
+    await this.service
       .post("/users", {
         user: {
           username: username,
@@ -65,14 +63,12 @@ class ApiService {
         },
       })
       .then((res) => {
-        console.log(res);
         if (res.data && res.data.user) {
           response = res.data.user;
         }
       })
       .catch((error) => {
         if (error && error.response) {
-          console.log(error.response.data);
           response = error.response.data;
         }
       });
@@ -80,12 +76,11 @@ class ApiService {
   }
   async updateUser(userData) {
     let response = {};
-    await axios
+    await this.service
       .put("/user", {
         user: userData,
       })
       .then((res) => {
-        console.log(res);
         if (res.data && res.data.user) {
           response = res.data.user;
         }
