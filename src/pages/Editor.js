@@ -11,7 +11,7 @@ const EDITOR_TEMPLATE = xml/* xml */ `
 
       <div class="col-md-10 offset-md-1 col-xs-12">
         <ul class="error-messages">
-            <li t-foreach="state.errors" t-as="errorKey">
+            <li t-foreach="state.errors" t-as="errorKey" t-key="errorKey">
                 <t t-esc="errorKey"/> <t t-esc="state.errors[errorKey]"/> 
             </li>
         </ul>

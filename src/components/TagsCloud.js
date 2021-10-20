@@ -1,4 +1,4 @@
-import { Component, tags, useState, hooks } from "@odoo/owl";
+import { Component, tags, useState } from "@odoo/owl";
 import { useApi } from "../hooks/useApi";
 
 const TAGS_CLOUD_TEMPLATE = tags.xml/*xml*/ `
@@ -7,7 +7,7 @@ const TAGS_CLOUD_TEMPLATE = tags.xml/*xml*/ `
         <p>Popular Tags</p>
         <div class="tag-list">
             <span t-if="state.loading">Loading tags...</span>
-            <t t-foreach="state.tags" t-as="tag">
+            <t t-foreach="state.tags" t-key="tag" t-as="tag">
                 <a href="#" class="tag-pill tag-default" t-on-click.prevent="tagSelected(tag)">
                     <t t-esc="tag"/>
                 </a>

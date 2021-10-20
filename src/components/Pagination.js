@@ -3,7 +3,7 @@ import { Component, tags } from "@odoo/owl";
 const PAGINATION_TEMPLATE = tags.xml/*xml*/ `
 <nav>
     <ul class="pagination" t-if="showPagination()">
-        <t t-foreach="getPagination()" t-as="pageNumber">
+        <t t-foreach="getPagination()" t-as="pageNumber" t-key="pageNumber">
             <li t-attf-class="page-item {{ pageNumber == getCurrentPage() ? 'active' : ''}}">
                 <a class="page-link" href="" t-on-click.prevent="triggerPageChange(pageNumber)"><t t-esc="pageNumber"/></a>
             </li>
