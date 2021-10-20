@@ -2,7 +2,7 @@ import { hooks } from "@odoo/owl";
 const { useStore } = hooks;
 import axios from "redaxios";
 
-class ApiService {
+export class ApiService {
   constructor(token) {
     let config = {
       baseURL: "https://conduit.productionready.io/api",

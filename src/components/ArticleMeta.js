@@ -14,7 +14,7 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
     </div>
     <!-- Articles List mode with only heart button -->
     <t t-if="props.articlesListMode">
-        <button t-attf-class="btn btn-sm pull-xs-right {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" t-att-disabled="state.updatingFavorited" t-on-click="updateFavorited(props.article.slug, !props.article.favorited)">
+        <button name="toggleFavorite" t-attf-class="btn btn-sm pull-xs-right {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" t-att-disabled="state.updatingFavorited" t-on-click="updateFavorited(props.article.slug, !props.article.favorited)">
             <i class="ion-heart"></i> <t t-esc="props.article.favoritesCount"/>
         </button>
     </t>
@@ -25,12 +25,13 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
                 <i class="ion-edit"></i> Edit Article
             </Link>
 
-            <button t-attf-class="btn btn-outline-danger btn-sm" t-on-click.prevent="deleteArticle(props.article.slug)">
+            <button name="deleteArticle" t-attf-class="btn btn-outline-danger btn-sm" t-on-click.prevent="deleteArticle(props.article.slug)">
                 <i class="ion-trash-a"></i> Delete Article
             </button>
         </span>
         <span t-else="">
             <button 
+                name="toggleFollow"
                 t-attf-class="btn btn-sm {{ props.article.author.following ? 'btn-secondary' : 'btn-outline-secondary' }}" 
                 t-on-click="updateFollowing(props.article.author.username, !props.article.author.following)" 
                 t-att-disabled="state.updatingFollowing"
@@ -38,6 +39,7 @@ const ARTICLE_META_PAGE_TEMPLATE = tags.xml/* xml */ `
                 <i class="ion-plus-round"></i> <t t-esc="props.article.author.following ? 'Unfollow' : 'Follow'"/> <t t-esc="props.article.author.username"/>
             </button> 
             <button 
+                name="toggleFavorite"
                 t-attf-class="btn btn-sm {{ props.article.favorited ? 'btn-primary': 'btn-outline-primary' }}" 
                 t-att-disabled="state.updatingFavorited" 
                 t-on-click="updateFavorited(props.article.slug, !props.article.favorited)"
