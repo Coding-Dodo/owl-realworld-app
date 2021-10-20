@@ -18,7 +18,7 @@ For more information on how to this works with other frontends/backends, head ov
 
 # How it works
 
-This project is using [OWL 1.2.6](https://github.com/odoo/owl) with Rollup.js as a bundler.
+This project is using [OWL 1.4.7](https://github.com/odoo/owl) with Rollup.js as a bundler and Jest for the tests.
 
 The structure of the project is as follow:
 
