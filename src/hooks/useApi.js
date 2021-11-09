@@ -5,7 +5,7 @@ import axios from "redaxios";
 export class ApiService {
   constructor(token) {
     let config = {
-      baseURL: "https://conduit.productionready.io/api",
+      baseURL: "https://api.realworld.io/api",
       timeout: 1000,
     };
     if (token) {
