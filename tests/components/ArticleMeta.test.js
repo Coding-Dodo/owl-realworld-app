@@ -16,6 +16,8 @@ let fixture;
 let store;
 let env;
 let parentFixture;
+let updateFavoritedEventHandler;
+let updateFollowingEventHandler;
 let dummyArticle = {
   title: "CodingDodo Test Article",
   slug: "CodingDodo-Test-Article",
@@ -29,7 +31,7 @@ let dummyArticle = {
   author: {
     username: "CodingDodo",
     bio: null,
-    image: "https://realworld-temp-api.herokuapp.com/images/smiley-cyrus.jpeg",
+    image: "https://api.realworld.io/images/smiley-cyrus.jpeg",
     following: false,
   },
 };
@@ -37,6 +39,16 @@ let dummyArticle = {
 beforeEach(async () => {
   parentFixture = makeTestParentFixture();
   fixture = makeTestFixture(parentFixture);
+  updateFavoritedEventHandler = jest.fn();
+  updateFollowingEventHandler = jest.fn();
+  parentFixture.addEventListener(
+    "update-favorited",
+    updateFavoritedEventHandler
+  );
+  parentFixture.addEventListener(
+    "update-following",
+    updateFollowingEventHandler
+  );
   store = makeStore();
   env = await makeEnvironment(store);
   ArticleMeta.env = env;
@@ -59,7 +71,7 @@ describe("ArticleMeta Component", () => {
     };
     const comp = await mount(ArticleMeta, { target: fixture, props });
     expect(fixture.innerHTML).toContain(
-      '<img src="https://realworld-temp-api.herokuapp.com/images/smiley-cyrus.jpeg">'
+      '<img src="https://api.realworld.io/images/smiley-cyrus.jpeg">'
     );
     expect(fixture.innerHTML).toContain("CodingDodo");
     expect(fixture.innerHTML).toContain(
@@ -74,7 +86,7 @@ describe("ArticleMeta Component", () => {
     };
     const comp = await mount(ArticleMeta, { target: fixture, props });
     expect(fixture.innerHTML).toContain(
-      '<img src="https://realworld-temp-api.herokuapp.com/images/smiley-cyrus.jpeg">'
+      '<img src="https://api.realworld.io/images/smiley-cyrus.jpeg">'
     );
     expect(fixture.innerHTML).toContain(
       '<button name="toggleFollow" class="btn btn-sm btn-outline-secondary"><i class="ion-plus-round"></i> Follow CodingDodo</button>'
@@ -95,12 +107,10 @@ describe("ArticleMeta Component", () => {
       })
     );
     const comp = await mount(ArticleMeta, { target: fixture, props });
-    const eventHandler = jest.fn();
-    parentFixture.addEventListener("update-favorited", eventHandler);
     await fixture.querySelector("button[name='toggleFavorite']").click();
     await nextTick();
-    expect(eventHandler).toHaveBeenCalled();
-    const detail = eventHandler.mock.calls[0][0].detail;
+    expect(updateFavoritedEventHandler).toHaveBeenCalled();
+    const detail = updateFavoritedEventHandler.mock.calls[0][0].detail;
     expect(detail.article.favoritesCount).toBe(4);
     expect(detail.article.favorited).toBe(false);
     Object.assign(props, { article: detail.article });
@@ -126,12 +136,10 @@ describe("ArticleMeta Component", () => {
       })
     );
     const comp = await mount(ArticleMeta, { target: fixture, props });
-    const eventHandler = jest.fn();
-    parentFixture.addEventListener("update-favorited", eventHandler);
     await fixture.querySelector("button[name='toggleFavorite']").click();
     await nextTick();
-    expect(eventHandler).toHaveBeenCalled();
-    const detail = eventHandler.mock.calls[0][0].detail;
+    expect(updateFavoritedEventHandler).toHaveBeenCalled();
+    const detail = updateFavoritedEventHandler.mock.calls[0][0].detail;
     expect(detail.article.favoritesCount).toBe(4);
     expect(detail.article.favorited).toBe(false);
     Object.assign(props, { article: detail.article });
@@ -152,19 +160,16 @@ describe("ArticleMeta Component", () => {
         profile: {
           username: "CodingDodo",
           bio: null,
-          image:
-            "https://realworld-temp-api.herokuapp.com/images/smiley-cyrus.jpeg",
+          image: "https://api.realworld.io/images/smiley-cyrus.jpeg",
           following: true,
         },
       })
     );
     const comp = await mount(ArticleMeta, { target: fixture, props });
-    const eventHandler = jest.fn();
-    parentFixture.addEventListener("update-following", eventHandler);
     await fixture.querySelector("button[name='toggleFollow']").click();
     await nextTick();
-    expect(eventHandler).toHaveBeenCalled();
-    let detail = eventHandler.mock.calls[0][0].detail;
+    expect(updateFollowingEventHandler).toHaveBeenCalled();
+    let detail = updateFollowingEventHandler.mock.calls[0][0].detail;
     expect(detail.profile.following).toBe(true);
     expect(detail.profile.username).toBe("CodingDodo");
     Object.assign(props.article, { author: detail.profile });
@@ -180,17 +185,16 @@ describe("ArticleMeta Component", () => {
         profile: {
           username: "CodingDodo",
           bio: null,
-          image:
-            "https://realworld-temp-api.herokuapp.com/images/smiley-cyrus.jpeg",
+          image: "https://api.realworld.io/images/smiley-cyrus.jpeg",
           following: false,
         },
       })
     );
     await fixture.querySelector("button[name='toggleFollow']").click();
     await nextTick();
-    expect(eventHandler).toBeCalledTimes(2);
+    expect(updateFollowingEventHandler).toBeCalledTimes(2);
     // calls[1] to get the second call to the handler
-    detail = eventHandler.mock.calls[1][0].detail;
+    detail = updateFollowingEventHandler.mock.calls[1][0].detail;
     expect(detail.profile.following).toBe(false);
     expect(detail.profile.username).toBe("CodingDodo");
     Object.assign(props.article, { author: detail.profile });
