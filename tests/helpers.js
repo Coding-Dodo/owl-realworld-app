@@ -1,18 +1,7 @@
 import { Component } from "@odoo/owl";
-import "regenerator-runtime/runtime";
 
 import { router, QWeb, Store } from "@odoo/owl";
-
-import { LogIn, Register, Home, Settings, Editor, Profile } from "../src/pages";
-
-export const ROUTES = [
-  { name: "HOME", path: "/", component: Home },
-  { name: "LOG_IN", path: "/login", component: LogIn },
-  { name: "REGISTER", path: "/register", component: Register },
-  { name: "SETTINGS", path: "/settings", component: Settings },
-  { name: "EDITOR", path: "/editor", component: Editor },
-  { name: "PROFILE", path: "/profile", component: Profile },
-];
+import { ROUTES } from "../src/routes";
 
 const actions = {
   logout({ state }) {
@@ -72,8 +61,4 @@ export function makeTestFixture(parent) {
     document.body.appendChild(fixture);
   }
   return fixture;
-}
-
-export function click(elem, selector) {
-  elem.querySelector(selector).dispatchEvent(new Event("click"));
 }

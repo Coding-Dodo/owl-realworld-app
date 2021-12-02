@@ -9,7 +9,6 @@ import {
   makeStore,
   makeEnvironment,
   nextTick,
-  click,
 } from "../helpers";
 import { mount, QWeb } from "@odoo/owl";
 let fixture;
@@ -176,7 +175,7 @@ describe("ArticleMeta Component", () => {
     await comp.render();
     await nextTick();
     expect(fixture.innerHTML).toContain(
-      '<i class="ion-plus-round"></i> Unfollow CodingDodo<'
+      '<i class="ion-plus-round"></i> Unfollow CodingDodo'
     );
 
     // Unfollow now

@@ -2,13 +2,7 @@
  * @jest-environment jsdom
  */
 import { App } from "../../src/App";
-import {
-  makeTestFixture,
-  makeStore,
-  makeEnvironment,
-  nextTick,
-  click,
-} from "../helpers";
+import { makeTestFixture, makeStore, makeEnvironment } from "../helpers";
 import { mount } from "@odoo/owl";
 let fixture;
 let store;
